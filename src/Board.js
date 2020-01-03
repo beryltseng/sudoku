@@ -6,35 +6,35 @@ class Board extends React.Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="square">
+          <div>
             <Grid />
           </div>
-          <div className="square">
+          <div>
             <Grid />
           </div>
-          <div className="square">
-            <Grid />
-          </div>
-        </div>
-        <div className="row">
-          <div className="square">
-            <Grid />
-          </div>
-          <div className="square">
-            <Grid />
-          </div>
-          <div className="square">
+          <div>
             <Grid />
           </div>
         </div>
         <div className="row">
-          <div className="square">
+          <div>
             <Grid />
           </div>
-          <div className="square">
+          <div>
             <Grid />
           </div>
-          <div className="square">
+          <div>
+            <Grid />
+          </div>
+        </div>
+        <div className="row">
+          <div>
+            <Grid />
+          </div>
+          <div>
+            <Grid />
+          </div>
+          <div>
             <Grid />
           </div>
         </div>
