@@ -14,11 +14,10 @@ class Board extends React.Component {
     
     return (
       <div className="board">{
-        Constants.DEFAULT_VALUES.map((i) => {
-          return this.getGrid(i - 1);
+        Constants.DEFAULT_VALUES.map((v, i) => {
+          return this.getGrid(i);
         })
-      }
-      </div>
+      }</div>
     );
   }
 }
