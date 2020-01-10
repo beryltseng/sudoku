@@ -6,6 +6,7 @@ class Grid extends React.Component {
   render() {
     
     const {grid} = this.props;
+    // console.log(`GRID: grid=${JSON.stringify(grid)}`)
     
     return (
       <div className="grid">
