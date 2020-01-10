@@ -2,18 +2,22 @@ import React from 'react';
 import Square from './Square.js';
 
 class Grid extends React.Component {
+  
   render() {
+    
+    const {grid} = this.props;
+    
     return (
       <div className="grid">
-        <Square value="1"/>
-        <Square value="2"/>
-        <Square value="3"/>
-        <Square value="4"/>
-        <Square value="5"/>
-        <Square value="6"/>
-        <Square value="7"/>
-        <Square value="8"/>
-        <Square value="9"/>
+        <Square value={grid[0]}/>
+        <Square value={grid[1]}/>
+        <Square value={grid[2]}/>
+        <Square value={grid[3]}/>
+        <Square value={grid[4]}/>
+        <Square value={grid[5]}/>
+        <Square value={grid[6]}/>
+        <Square value={grid[7]}/>
+        <Square value={grid[8]}/>
       </div>
     );
   }
