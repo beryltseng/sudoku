@@ -12,39 +12,31 @@ code {
     monospace;
 }
 
-.board-row:after {
-  clear: both;
-  content: "";
-  display: table;
-}
-
 .square {
   background: #fff;
   border: 1px solid #999;
-  /* float: left; */
   font-size: 20px;
-  /* font-weight: bold; */
-/*  line-height: 34px;*/
+  width: 50px;  
   height: 50px;
-  /* margin-left: 1px;   */
-/*  margin-right: 1px;
-  margin-top: 1px;*/
   margin: 2px;
   padding: 2px;
   text-align: center;
-  width: 50px;
 }
 
 .square:focus {
   outline-width: 5px;
-  /* outline-style: dashed; */
   outline-color: red;
 }
 
 .grid {
   border: 2px solid black;
+  display: inline-grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
 }
 
 .board {
-  margin: 10px;
+  display: inline-grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
 }
