@@ -4,7 +4,7 @@ import Square from './Square.js';
 class Grid extends React.Component {
   render() {
     return (
-      <div>
+      <div className="grid">
         <div className="board-row">
           <Square value="1"/>
           <Square value="2"/>
