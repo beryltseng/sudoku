@@ -6,6 +6,9 @@ function App() {
   return (
     <div className="App">
       <Board />
+      <div className="footer">
+        <a href="https://www.linkedin.com/in/beryl-tseng/">Beryl Tseng</a>
+      </div>
     </div>
   );
 }
