@@ -149,8 +149,8 @@ class App extends React.Component {
         }</div>
     
         <div className="footer">
-          <div className="author">
-            author: <a href="https://www.linkedin.com/in/beryl-tseng/">Beryl Tseng</a>
+          <div>
+            2020 © <a className="author" href="https://www.linkedin.com/in/beryl-tseng/">Beryl Tseng</a>
           </div>
           <div>
             <a href="https://github.com/beryltseng/sukodu/issues/new">I want to tell you about a problem (You will need a GitHub account).</a>
