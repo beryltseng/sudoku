@@ -27,7 +27,8 @@ class App extends React.Component {
   
   state = {
     status: STATUS.INITIAL,
-    board: Array(9).fill(null).map(() => Array(9).fill(0))
+    board: Array(9).fill(null).map(() => Array(9).fill(0)),
+    penValue: 1
   };
   
   onStartGame = () => {
@@ -94,9 +95,18 @@ class App extends React.Component {
     });
   }
   
+  onPenChanged = (event) => {
+    const penValue = event.target.value;
+    this.setState((prevState) => ({
+      status: prevState.status,
+      board: prevState.board,
+      penValue: penValue
+    }));
+  }
+  
   render() {
     
-    const {status, board} = this.state;
+    const {status, board, penValue} = this.state;
     
     console.log(`APP: board=${JSON.stringify(board)}`);
     
@@ -106,24 +116,22 @@ class App extends React.Component {
         <Board board={board}/>
     
         <div className="dashboard">{status === STATUS.INITIAL ? (
-            <button type="button" className="btn btn-primary mb-3" onClick={() => this.onStartGame()}>Start</button>
+            <button type="button" className="btn btn-primary mb-3" onClick={() => this.onStartGame()}>Let&#39;s go!</button>
           ) : (
             <div className="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
               <div className="btn-group mr-2" role="group" aria-label="First group">
-                <button type="button" className="btn btn-secondary" onClick={() => this.onStartGame()}>Restart</button>
-                <button type="button" className="btn btn-primary">Submit</button>            
+                <button type="button" className="btn btn-secondary" onClick={() => this.onStartGame()}>New Beginning</button>
+                <button type="button" className="btn btn-primary">Verdict</button>            
               </div>
-              <div className="btn-group mr-2" role="group" aria-label="Second group">
-                <button type="button" className="btn btn-outline-primary">1</button>
-                <button type="button" className="btn btn-outline-primary">2</button>
-                <button type="button" className="btn btn-outline-primary">3</button>
-                <button type="button" className="btn btn-outline-primary">4</button>
-                <button type="button" className="btn btn-outline-primary">5</button>
-                <button type="button" className="btn btn-outline-primary">6</button>
-                <button type="button" className="btn btn-outline-primary">7</button>
-                <button type="button" className="btn btn-outline-primary">8</button>
-                <button type="button" className="btn btn-outline-primary">9</button>                        
-              </div>
+              <div className="btn-group mr-2" role="group" aria-label="Second group">{
+                Constants.DEFAULT_VALUES.map((v) => {
+                  return penValue === v ? (
+                    <button type="button" className="btn btn-outline-primary focus" onClick={(event) => this.onPenChanged(event)}>{v}</button>
+                  ) : (
+                    <button type="button" className="btn btn-outline-primary" onClick={(event) => this.onPenChanged(event)}>{v}</button>
+                  )
+                })
+              }</div>
             </div>
           )
         }</div>
