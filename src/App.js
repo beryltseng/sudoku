@@ -91,9 +91,14 @@ class App extends React.Component {
         const selection = Math.floor(Math.random() * 9) + 1; // random number from 1 to 9
         if ((candidates[row][col] & (1 << selection)) > 0) { // the selected number is a valid candidate
           candidates[row][col] &= ~(1 << selection); // remove the selected number as a candidate
-          board[row][col].value = selection;
-          board[row][col].display = Math.random() >= 0.5 ? selection : " ";
-          board[row][col].mutable = board[row][col].display === " ";
+          const hide = Math.random() > 0.55; // TODO: may not leave enough clues to solve the puzzle
+          board[row][col] = {
+            ...board[row][col], ...{ // merge 2 objects
+              value: selection,
+              display: hide ? " " : selection,
+              mutable: hide
+            }
+          }
           game = generate(nextRow, nextCol, updateCandidates(selection), board);
         }
       }
