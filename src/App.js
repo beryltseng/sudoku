@@ -120,7 +120,13 @@ class App extends React.Component {
             </div>
           ) : status === Constants.STATUS.FAILED ? (
             <div>
-              <p>Sorry, you got {stats.incorrect} wrong. Don&#39;t give up. The more you play, the better you get!</p>
+              <span>{stats.incorrect > 0 ? (
+                <p>Sorry, you got {stats.incorrect} wrong so far.</p>
+              ) : (
+                <p>You haven&#39;t finished the game.</p>
+              )
+              }</span>
+              <p>Don&#39;t give up. The more you play, the better you get!</p>
               <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Play again!</button>                  
             </div>
           ) : (

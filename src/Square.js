@@ -8,8 +8,11 @@ class Square extends React.Component {
     const {status, square} = this.props;
     
     return (
-      <button className='square' disabled={!square.mutable || status === Constants.STATUS.RESOLVED || status === Constants.STATUS.FAILED} onClick={() => this.props.handler(square.row, square.col)}>
-        {square.display}
+      <button
+        className={status === Constants.STATUS.FAILED && square.display !== " " && square.display !== square.value ?
+                    'square square-error' : square.mutable ? 'square square-mutable' : 'square'}
+        disabled={!square.mutable || status === Constants.STATUS.RESOLVED || status === Constants.STATUS.FAILED}
+        onClick={() => this.props.handler(square.row, square.col)}>{square.display}
       </button>
     );
   }

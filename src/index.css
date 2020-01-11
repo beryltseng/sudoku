@@ -33,6 +33,14 @@ code {
   outline-color: #2980B9;
 }
 
+.square-mutable {
+  color: #2980B9;
+}
+
+.square-error {
+  color: red;
+}
+
 /* grid
 ------------------------------------*/
 .grid {
