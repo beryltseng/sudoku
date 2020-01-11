@@ -4,25 +4,6 @@ import Board from './Board.js';
 import Constants from './Constants.js';
 
 
-const rowIndexes = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8]
-];
-
-const colIndexes = [
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8]
-];
-
-const STATUS = {
-  INITIAL: 1,
-  STARTED: 1 << 1,
-  RESOLVED: 1 << 2,
-  FAILED: 1 << 3
-};
-
 class App extends React.Component {
   
   state = {
@@ -44,70 +25,7 @@ class App extends React.Component {
   };
   
   onStartGame = () => {
-        
-    const generate = function(row, col, candidates, board) {
-      // console.debug(`Generate(
-      //   row=${row}
-      //   col=${col}
-      //   candidates=${JSON.stringify(candidates)}
-      //   board=${JSON.stringify(board)}
-      // )`)
-      const updateCandidates = function(toRemove) {
-        
-        const newCandidates = JSON.parse(JSON.stringify(candidates));
-        const mask = ~(1 << toRemove);
-        
-        // remove it from all squares on the same grid
-        Constants.DEFAULT_VALUES.forEach((value, index) => {
-          newCandidates[row][index] &= mask;
-        });
-        
-        // remove it from all squares on the same row
-        rowIndexes[Math.floor(row / 3)].forEach((r) => {
-          rowIndexes[Math.floor(col / 3)].forEach((c) => {
-            newCandidates[r][c] &= mask;
-          });
-        });
-        
-        // remove it from all squares on the same coloum
-        colIndexes[row % 3].forEach((r) => {
-          colIndexes[col % 3].forEach((c) => {
-            newCandidates[r][c] &= mask;
-          });
-        });
-        
-        return newCandidates;
-      }
-      
-      if (row === 9 && col === 0) return board;
-      
-      const nextRow = Math.floor((col + 1) / 9) > 0 ? row + 1 : row;
-      const nextCol = (col + 1) % 9;
-      let game = null;
-      
-      // while there are still candidates for the square at [row][col] and we haven't found
-      // a valid board   
-      while ((candidates[row][col] & Constants.DEFAULT_CANDIDATES) > 0 && !game) {
-        const selection = Math.floor(Math.random() * 9) + 1; // random number from 1 to 9
-        if ((candidates[row][col] & (1 << selection)) > 0) { // the selected number is a valid candidate
-          candidates[row][col] &= ~(1 << selection); // remove the selected number as a candidate
-          const hide = Math.random() > 0.55; // TODO: may not leave enough clues to solve the puzzle
-          board[row][col] = {
-            ...board[row][col], ...{ // merge 2 objects
-              value: selection,
-              display: hide ? " " : selection,
-              mutable: hide
-            }
-          }
-          game = generate(nextRow, nextCol, updateCandidates(selection), board);
-        }
-      }
-      return game;
-    }
-    
-  
     const {board} = this.state;
-    
     this.setState((prevState) => ({
       status: STATUS.STARTED,
       board: generate(0, 0, Array(9).fill(Array(9).fill(Constants.DEFAULT_CANDIDATES)), board),
@@ -182,3 +100,83 @@ class App extends React.Component {
 }
 
 export default App;
+
+
+/////////////////////////////////////////////////////
+// Helpers
+/////////////////////////////////////////////////////
+
+const rowIndexes = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8]
+];
+
+const colIndexes = [
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8]
+];
+
+const STATUS = {
+  INITIAL: 1,
+  STARTED: 1 << 1,
+  RESOLVED: 1 << 2,
+  FAILED: 1 << 3
+};
+
+function generate(row, col, candidates, board) {
+
+  const updateCandidates = function(toRemove) {
+    
+    const newCandidates = JSON.parse(JSON.stringify(candidates));
+    const mask = ~(1 << toRemove);
+    
+    // remove it from all squares on the same grid
+    Constants.DEFAULT_VALUES.forEach((value, index) => {
+      newCandidates[row][index] &= mask;
+    });
+    
+    // remove it from all squares on the same row
+    rowIndexes[Math.floor(row / 3)].forEach((r) => {
+      rowIndexes[Math.floor(col / 3)].forEach((c) => {
+        newCandidates[r][c] &= mask;
+      });
+    });
+    
+    // remove it from all squares on the same coloum
+    colIndexes[row % 3].forEach((r) => {
+      colIndexes[col % 3].forEach((c) => {
+        newCandidates[r][c] &= mask;
+      });
+    });
+    
+    return newCandidates;
+  }
+  
+  if (row === 9 && col === 0) return board;
+  
+  const nextRow = Math.floor((col + 1) / 9) > 0 ? row + 1 : row;
+  const nextCol = (col + 1) % 9;
+  let game = null;
+  
+  // while there are still candidates for the square at [row][col] and we haven't found
+  // a valid board   
+  while ((candidates[row][col] & Constants.DEFAULT_CANDIDATES) > 0 && !game) {
+    const selection = Math.floor(Math.random() * 9) + 1; // random number from 1 to 9
+    if ((candidates[row][col] & (1 << selection)) > 0) { // the selected number is a valid candidate
+      candidates[row][col] &= ~(1 << selection); // remove the selected number as a candidate
+      const hide = Math.random() > 0.55; // TODO: may not leave enough clues to solve the puzzle
+      board[row][col] = {
+        ...board[row][col], ...{ // merge 2 objects
+          value: selection,
+          display: hide ? " " : selection,
+          mutable: hide
+        }
+      }
+      game = generate(nextRow, nextCol, updateCandidates(selection), board);
+    }
+  }
+  return game;
+}
+
