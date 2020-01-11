@@ -16,11 +16,19 @@ const colIndexes = [
   [2, 5, 8]
 ];
 
+const STATUS = {
+  INITIAL: 1,
+  STARTED: 1 << 1,
+  RESOLVED: 1 << 2,
+  FAILED: 1 << 3
+};
+
 class App extends React.Component {
   
   state = {
+    status: STATUS.INITIAL,
     board: Array(9).fill(null).map(() => Array(9).fill(0))
-  }
+  };
   
   onStartGame = () => {
         
@@ -43,15 +51,15 @@ class App extends React.Component {
         rowIndexes[Math.floor(row / 3)].forEach((r) => {
           rowIndexes[Math.floor(col / 3)].forEach((c) => {
             newCandidates[r][c] &= mask;
-          })
-        })
+          });
+        });
         
         // remove candidate from the same coloum
         colIndexes[row % 3].forEach((r) => {
           colIndexes[col % 3].forEach((c) => {
             newCandidates[r][c] &= mask;
-          })
-        })
+          });
+        });
         
         return newCandidates;
       }
@@ -104,7 +112,7 @@ class App extends React.Component {
             author: <a href="https://www.linkedin.com/in/beryl-tseng/">Beryl Tseng</a>
           </div>
           <div>
-            <a href="https://github.com/beryltseng/sukodu/issues/new">Report a problem (Requires a GitHub account).</a>
+            <a href="https://github.com/beryltseng/sukodu/issues/new">Report a problem (You will need a GitHub account).</a>
           </div>
         </div>
         
