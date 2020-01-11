@@ -88,13 +88,14 @@ class App extends React.Component {
     const {board} = this.state;
     
     this.setState({
+      status: STATUS.STARTED,
       board: generate(0, 0, Array(9).fill(Array(9).fill(Constants.DEFAULT_CANDIDATES)), board)
     });
   }
   
   render() {
     
-    const {board} = this.state;
+    const {status, board} = this.state;
     
     console.log(`APP: board=${JSON.stringify(board)}`);
     
@@ -103,9 +104,23 @@ class App extends React.Component {
     
         <Board board={board}/>
     
-        <div className="dashboard">
-          <button type="button" className="btn btn-primary mb-3" onClick={() => this.onStartGame()}>Start</button>
-        </div>
+        <div className="dashboard">{status === STATUS.INITIAL ? (
+            <button type="button" className="btn btn-primary mb-3" onClick={() => this.onStartGame()}>Start</button>
+          ) : (
+            <div>
+              <button type="button" className="btn btn-secondary mb-3" onClick={() => this.onStartGame()}>Restart</button>
+              <button type="button" className="btn btn-primary mb-3">1</button>            
+              <button type="button" className="btn btn-primary mb-3">2</button>
+              <button type="button" className="btn btn-primary mb-3">3</button>
+              <button type="button" className="btn btn-primary mb-3">4</button>
+              <button type="button" className="btn btn-primary mb-3">5</button>
+              <button type="button" className="btn btn-primary mb-3">6</button>
+              <button type="button" className="btn btn-primary mb-3">7</button>
+              <button type="button" className="btn btn-primary mb-3">8</button>
+              <button type="button" className="btn btn-primary mb-3">9</button>                                                                                                            
+            </div>
+          )
+        }</div>
     
         <div className="footer">
           <div className="author">
