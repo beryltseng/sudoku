@@ -1,6 +1,5 @@
 import React from 'react';
 import Grid from './Grid.js';
-import Constants from './Constants.js';
 
 class Board extends React.Component {
   
@@ -12,9 +11,11 @@ class Board extends React.Component {
 
   render() {
     
+    const {board} = this.props;
+    
     return (
       <div className="board">{
-        Constants.DEFAULT_VALUES.map((v, i) => {
+        board.map((v, i) => {
           return this.getGrid(i);
         })
       }</div>

@@ -5,7 +5,7 @@ class Grid extends React.Component {
   
   getSquare = (i) => {
     return (
-      <Square value={this.props.grid[i]} guess={this.props.grid[i] === 0 || Math.random() >= 0.5 ? this.props.grid[i] : null} key={i} />
+      <Square square={this.props.grid[i]} key={i} />
     )
   }
   

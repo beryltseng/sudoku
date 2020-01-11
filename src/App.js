@@ -27,7 +27,19 @@ class App extends React.Component {
   
   state = {
     status: STATUS.INITIAL,
-    board: Array(9).fill(null).map(() => Array(9).fill(0)),
+    board: Constants.DEFAULT_VALUES.reduce((acc, cur, idx) => {
+      acc.push(Constants.DEFAULT_VALUES.reduce((a, c, i) => {
+        a.push({
+          row: idx,
+          col: i,
+          value: 0,
+          display: " ",
+          mutable: false
+        });
+        return a;
+      }, []));
+      return acc;
+    }, []),
     penValue: 1
   };
   
@@ -79,7 +91,9 @@ class App extends React.Component {
         const selection = Math.floor(Math.random() * 9) + 1; // random number from 1 to 9
         if ((candidates[row][col] & (1 << selection)) > 0) { // the selected number is a valid candidate
           candidates[row][col] &= ~(1 << selection); // remove the selected number as a candidate
-          board[row][col] = selection;
+          board[row][col].value = selection;
+          board[row][col].display = Math.random() >= 0.5 ? selection : " ";
+          board[row][col].mutable = board[row][col].display === " ";
           game = generate(nextRow, nextCol, updateCandidates(selection), board);
         }
       }
@@ -126,9 +140,9 @@ class App extends React.Component {
               <div className="btn-group mr-2" role="group" aria-label="Second group">{
                 Constants.DEFAULT_VALUES.map((v) => {
                   return penValue === v ? (
-                    <button type="button" className="btn btn-outline-primary focus" onClick={(event) => this.onPenChanged(event)}>{v}</button>
+                    <button type="button" className="btn btn-outline-primary focus" onClick={(event) => this.onPenChanged(event)} key={v}>{v}</button>
                   ) : (
-                    <button type="button" className="btn btn-outline-primary" onClick={(event) => this.onPenChanged(event)}>{v}</button>
+                    <button type="button" className="btn btn-outline-primary" onClick={(event) => this.onPenChanged(event)} key={v}>{v}</button>
                   )
                 })
               }</div>
