@@ -39,22 +39,24 @@ class App extends React.Component {
       //   candidates=${JSON.stringify(candidates)}
       //   board=${JSON.stringify(board)}
       // )`)
-      const updateCandidates = function(mask) {
-        const newCandidates = JSON.parse(JSON.stringify(candidates));
+      const updateCandidates = function(toRemove) {
         
-        // remove candidate from the same grid
+        const newCandidates = JSON.parse(JSON.stringify(candidates));
+        const mask = ~(1 << toRemove);
+        
+        // remove it from all squares on the same grid
         Constants.DEFAULT_VALUES.forEach((value, index) => {
           newCandidates[row][index] &= mask;
         });
         
-        // remove candidate from the same row
+        // remove it from all squares on the same row
         rowIndexes[Math.floor(row / 3)].forEach((r) => {
           rowIndexes[Math.floor(col / 3)].forEach((c) => {
             newCandidates[r][c] &= mask;
           });
         });
         
-        // remove candidate from the same coloum
+        // remove it from all squares on the same coloum
         colIndexes[row % 3].forEach((r) => {
           colIndexes[col % 3].forEach((c) => {
             newCandidates[r][c] &= mask;
@@ -75,10 +77,9 @@ class App extends React.Component {
       while ((candidates[row][col] & Constants.DEFAULT_CANDIDATES) > 0 && !game) {
         const selection = Math.floor(Math.random() * 9) + 1; // random number from 1 to 9
         if ((candidates[row][col] & (1 << selection)) > 0) { // the selected number is a valid candidate
-          const mask = ~(1 << selection);
-          candidates[row][col] &= mask; // remove the selected number as a candidate for the square at [row][col]
+          candidates[row][col] &= ~(1 << selection); // remove the selected number as a candidate
           board[row][col] = selection;
-          game = generate(nextRow, nextCol, updateCandidates(mask), board);
+          game = generate(nextRow, nextCol, updateCandidates(selection), board);
         }
       }
       return game;
@@ -108,16 +109,23 @@ class App extends React.Component {
             <button type="button" className="btn btn-primary mb-3" onClick={() => this.onStartGame()}>Start</button>
           ) : (
             <div>
-              <button type="button" className="btn btn-secondary mb-3" onClick={() => this.onStartGame()}>Restart</button>
-              <button type="button" className="btn btn-primary mb-3">1</button>            
-              <button type="button" className="btn btn-primary mb-3">2</button>
-              <button type="button" className="btn btn-primary mb-3">3</button>
-              <button type="button" className="btn btn-primary mb-3">4</button>
-              <button type="button" className="btn btn-primary mb-3">5</button>
-              <button type="button" className="btn btn-primary mb-3">6</button>
-              <button type="button" className="btn btn-primary mb-3">7</button>
-              <button type="button" className="btn btn-primary mb-3">8</button>
-              <button type="button" className="btn btn-primary mb-3">9</button>                                                                                                            
+              <div className="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+                <div className="btn-group mr-2" role="group" aria-label="First group">
+                  <button type="button" className="btn btn-secondary" onClick={() => this.onStartGame()}>Restart</button>
+                  <button type="button" className="btn btn-info">How did I do?</button>            
+                </div>
+                <div className="btn-group mr-2" role="group" aria-label="Second group">
+                  <button type="button" className="btn btn-outline-primary">1</button>
+                  <button type="button" className="btn btn-outline-primary">2</button>
+                  <button type="button" className="btn btn-outline-primary">3</button>
+                  <button type="button" className="btn btn-outline-primary">4</button>
+                  <button type="button" className="btn btn-outline-primary">5</button>
+                  <button type="button" className="btn btn-outline-primary">6</button>
+                  <button type="button" className="btn btn-outline-primary">7</button>
+                  <button type="button" className="btn btn-outline-primary">8</button>
+                  <button type="button" className="btn btn-outline-primary">9</button>                        
+                </div>
+              </div>
             </div>
           )
         }</div>
