@@ -100,7 +100,12 @@ class App extends React.Component {
         </div>
     
         <div className="footer">
-          author: <a href="https://www.linkedin.com/in/beryl-tseng/">Beryl Tseng</a>
+          <div className="author">
+            author: <a href="https://www.linkedin.com/in/beryl-tseng/">Beryl Tseng</a>
+          </div>
+          <div>
+            <a href="https://github.com/beryltseng/sukodu/issues/new">Report a problem (Requires a GitHub account).</a>
+          </div>
         </div>
         
       </div>
