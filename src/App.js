@@ -103,14 +103,17 @@ class App extends React.Component {
   
     const {board} = this.state;
     
-    this.setState({
+    this.setState((prevState) => ({
       status: STATUS.STARTED,
-      board: generate(0, 0, Array(9).fill(Array(9).fill(Constants.DEFAULT_CANDIDATES)), board)
-    });
+      board: generate(0, 0, Array(9).fill(Array(9).fill(Constants.DEFAULT_CANDIDATES)), board),
+      penValue: prevState.penValue
+    }));
+    
+    console.debug(`APP: board=${JSON.stringify(this.state.board)}`);    
   }
   
-  onPenChanged = (event) => {
-    const penValue = event.target.value;
+  onPenChanged = (penValue) => {
+    // console.debug(`onPenChanged(${penValue})`);
     this.setState((prevState) => ({
       status: prevState.status,
       board: prevState.board,
@@ -118,31 +121,40 @@ class App extends React.Component {
     }));
   }
   
+  onSquareClicked = (row, col) => {
+    // console.debug(`onSquareClicked(${row}, ${col})`);
+    const {board, penValue} = this.state;
+    board[row][col].display = penValue;
+    this.setState((prevState) => ({
+      status: prevState.status,
+      board: board,
+      penValue: prevState.penValue
+    }));
+  }
+  
   render() {
     
     const {status, board, penValue} = this.state;
     
-    console.log(`APP: board=${JSON.stringify(board)}`);
-    
     return (
       <div className="App">
     
-        <Board board={board}/>
+        <Board board={board} handler={(row, col) => this.onSquareClicked(row, col)}/>
     
         <div className="dashboard">{status === STATUS.INITIAL ? (
-            <button type="button" className="btn btn-primary mb-3" onClick={() => this.onStartGame()}>Let&#39;s go!</button>
+            <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Let&#39;s go!</button>
           ) : (
             <div className="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
               <div className="btn-group mr-2" role="group" aria-label="First group">
-                <button type="button" className="btn btn-secondary" onClick={() => this.onStartGame()}>New Beginning</button>
+                <button type="button" className="btn btn-secondary" onClick={this.onStartGame}>New Beginning</button>
                 <button type="button" className="btn btn-primary">Verdict</button>            
               </div>
               <div className="btn-group mr-2" role="group" aria-label="Second group">{
                 Constants.DEFAULT_VALUES.map((v) => {
                   return penValue === v ? (
-                    <button type="button" className="btn btn-outline-primary focus" onClick={(event) => this.onPenChanged(event)} key={v}>{v}</button>
+                    <button type="button" className="btn btn-outline-primary focus" onClick={() => this.onPenChanged(v)} key={v}>{v}</button>
                   ) : (
-                    <button type="button" className="btn btn-outline-primary" onClick={(event) => this.onPenChanged(event)} key={v}>{v}</button>
+                    <button type="button" className="btn btn-outline-primary" onClick={() => this.onPenChanged(v)} key={v}>{v}</button>
                   )
                 })
               }</div>
