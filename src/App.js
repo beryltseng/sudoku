@@ -108,23 +108,21 @@ class App extends React.Component {
         <div className="dashboard">{status === STATUS.INITIAL ? (
             <button type="button" className="btn btn-primary mb-3" onClick={() => this.onStartGame()}>Start</button>
           ) : (
-            <div>
-              <div className="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
-                <div className="btn-group mr-2" role="group" aria-label="First group">
-                  <button type="button" className="btn btn-secondary" onClick={() => this.onStartGame()}>Restart</button>
-                  <button type="button" className="btn btn-info">How did I do?</button>            
-                </div>
-                <div className="btn-group mr-2" role="group" aria-label="Second group">
-                  <button type="button" className="btn btn-outline-primary">1</button>
-                  <button type="button" className="btn btn-outline-primary">2</button>
-                  <button type="button" className="btn btn-outline-primary">3</button>
-                  <button type="button" className="btn btn-outline-primary">4</button>
-                  <button type="button" className="btn btn-outline-primary">5</button>
-                  <button type="button" className="btn btn-outline-primary">6</button>
-                  <button type="button" className="btn btn-outline-primary">7</button>
-                  <button type="button" className="btn btn-outline-primary">8</button>
-                  <button type="button" className="btn btn-outline-primary">9</button>                        
-                </div>
+            <div className="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+              <div className="btn-group mr-2" role="group" aria-label="First group">
+                <button type="button" className="btn btn-secondary" onClick={() => this.onStartGame()}>Restart</button>
+                <button type="button" className="btn btn-primary">Submit</button>            
+              </div>
+              <div className="btn-group mr-2" role="group" aria-label="Second group">
+                <button type="button" className="btn btn-outline-primary">1</button>
+                <button type="button" className="btn btn-outline-primary">2</button>
+                <button type="button" className="btn btn-outline-primary">3</button>
+                <button type="button" className="btn btn-outline-primary">4</button>
+                <button type="button" className="btn btn-outline-primary">5</button>
+                <button type="button" className="btn btn-outline-primary">6</button>
+                <button type="button" className="btn btn-outline-primary">7</button>
+                <button type="button" className="btn btn-outline-primary">8</button>
+                <button type="button" className="btn btn-outline-primary">9</button>                        
               </div>
             </div>
           )
