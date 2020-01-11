@@ -60,8 +60,16 @@ class App extends React.Component {
     console.debug(`APP:onStartGame(): ${JSON.stringify(this.state)}`);    
   }
   
+  onEndGame = () => {
+    this.setState((prevState) => ({
+      status: STATUS.FAILED,
+      board: prevState.board,
+      penValue: prevState.penValue,
+      stats: prevState.stats
+    }));
+  }
+  
   onPenChanged = (penValue) => {
-    // console.debug(`onPenChanged(${penValue})`);
     this.setState((prevState) => ({
       status: prevState.status,
       board: prevState.board,
@@ -71,7 +79,6 @@ class App extends React.Component {
   }
   
   onSquareClicked = (row, col) => {
-    // console.debug(`onSquareClicked(${row}, ${col})`);
     const {board, penValue, stats} = this.state;
     if (board[row][col].display === " ") {
       --stats.unknown;
@@ -91,23 +98,19 @@ class App extends React.Component {
           --stats.incorrect;          
         }
     }
-    if (stats.unknown === 0 && stats.incorrect === 0) {
-      // TODO
-      console.log(`RESOLVED!!!`);
-    }
     board[row][col].display = penValue;
     this.setState((prevState) => ({
-      status: prevState.status,
+      status: (stats.unknown === 0 && stats.incorrect === 0) ? STATUS.RESOLVED : prevState.status,
       board: board,
       penValue: prevState.penValue,
       stats: stats
     }));
-    console.debug(`APP:onSquareClicked(${row}, ${col}): ${JSON.stringify(this.state)}`);        
+    // console.debug(`APP:onSquareClicked(${row}, ${col}): ${JSON.stringify(this.state)}`);
   }
   
   render() {
     
-    const {status, board, penValue} = this.state;
+    const {status, board, penValue, stats} = this.state;
     
     return (
       <div className="App">
@@ -116,11 +119,21 @@ class App extends React.Component {
     
         <div className="dashboard">{status === STATUS.INITIAL ? (
             <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Let&#39;s go!</button>
+          ) : status === STATUS.RESOLVED ? (
+            <div>
+              <p>You are a genius!!!</p>
+              <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Play again!</button>            
+            </div>
+          ) : status === STATUS.FAILED ? (
+            <div>
+              <p>Sorry, you got {stats.incorrect} wrong. Don&#39;t give up.</p>
+              <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Play again!</button>                  
+            </div>
           ) : (
             <div className="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
               <div className="btn-group mr-2" role="group" aria-label="First group">
                 <button type="button" className="btn btn-secondary" onClick={this.onStartGame}>New Beginning</button>
-                <button type="button" className="btn btn-primary">Verdict</button>            
+                <button type="button" className="btn btn-primary" onClick={this.onEndGame}>Verdict</button>            
               </div>
               <div className="btn-group mr-2" role="group" aria-label="Second group">{
                 Constants.DEFAULT_VALUES.map((v) => {
