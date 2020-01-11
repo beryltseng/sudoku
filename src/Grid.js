@@ -5,7 +5,7 @@ class Grid extends React.Component {
   
   getSquare = (i) => {
     return (
-      <Square square={this.props.grid[i]} handler={this.props.handler} key={i} />
+      <Square square={this.props.grid[i]} status={this.props.status} handler={this.props.handler} key={i} />
     )
   }
   

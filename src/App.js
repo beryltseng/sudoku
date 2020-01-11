@@ -3,13 +3,6 @@ import './App.css';
 import Board from './Board.js';
 import Constants from './Constants.js';
 
-const STATUS = {
-  INITIAL: 1,
-  STARTED: 1 << 1,
-  RESOLVED: 1 << 2,
-  FAILED: 1 << 3
-};
-
 const rowIndexes = [
   [0, 1, 2],
   [3, 4, 5],
@@ -25,7 +18,7 @@ const colIndexes = [
 class App extends React.Component {
   
   state = {
-    status: STATUS.INITIAL,
+    status: Constants.STATUS.INITIAL,
     board: Constants.DEFAULT_VALUES.reduce((acc, cur, idx) => {
       acc.push(Constants.DEFAULT_VALUES.reduce((a, c, i) => {
         a.push({
@@ -51,7 +44,7 @@ class App extends React.Component {
     board = generate(0, 0, Array(9).fill(Array(9).fill(Constants.DEFAULT_CANDIDATES)), board);
     statistics(board, stats);
     this.setState((prevState) => ({
-      status: STATUS.STARTED,
+      status: Constants.STATUS.STARTED,
       board: board,
       penValue: prevState.penValue,
       stats: stats
@@ -62,7 +55,7 @@ class App extends React.Component {
   
   onEndGame = () => {
     this.setState((prevState) => ({
-      status: STATUS.FAILED,
+      status: Constants.STATUS.FAILED,
       board: prevState.board,
       penValue: prevState.penValue,
       stats: prevState.stats
@@ -79,7 +72,8 @@ class App extends React.Component {
   }
   
   onSquareClicked = (row, col) => {
-    const {board, penValue, stats} = this.state;
+    const {status, board, penValue, stats} = this.state;
+    // if (status === Constants.STATUS.RESOLVED || status === Constants.STATUS.FAILED) return;
     if (board[row][col].display === " ") {
       --stats.unknown;
     }
@@ -100,7 +94,7 @@ class App extends React.Component {
     }
     board[row][col].display = penValue;
     this.setState((prevState) => ({
-      status: (stats.unknown === 0 && stats.incorrect === 0) ? STATUS.RESOLVED : prevState.status,
+      status: (stats.unknown === 0 && stats.incorrect === 0) ? Constants.STATUS.RESOLVED : prevState.status,
       board: board,
       penValue: prevState.penValue,
       stats: stats
@@ -115,18 +109,18 @@ class App extends React.Component {
     return (
       <div className="App">
     
-        <Board board={board} handler={(row, col) => this.onSquareClicked(row, col)}/>
+        <Board board={board} status={status} handler={(row, col) => this.onSquareClicked(row, col)}/>
     
-        <div className="dashboard">{status === STATUS.INITIAL ? (
+        <div className="dashboard">{status === Constants.STATUS.INITIAL ? (
             <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Let&#39;s go!</button>
-          ) : status === STATUS.RESOLVED ? (
+          ) : status === Constants.STATUS.RESOLVED ? (
             <div>
               <p>You are a genius!!!</p>
               <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Play again!</button>            
             </div>
-          ) : status === STATUS.FAILED ? (
+          ) : status === Constants.STATUS.FAILED ? (
             <div>
-              <p>Sorry, you got {stats.incorrect} wrong. Don&#39;t give up.</p>
+              <p>Sorry, you got {stats.incorrect} wrong. Don&#39;t give up. The more you play, the better you get!</p>
               <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Play again!</button>                  
             </div>
           ) : (

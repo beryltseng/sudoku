@@ -5,7 +5,7 @@ class Board extends React.Component {
   
   getGrid = (i) => {
     return (
-      <Grid grid={this.props.board[i]} handler={this.props.handler} key={i} />
+      <Grid grid={this.props.board[i]} status={this.props.status} handler={this.props.handler} key={i} />
     );
   }
 
