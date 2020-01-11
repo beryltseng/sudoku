@@ -3,6 +3,24 @@ import './App.css';
 import Board from './Board.js';
 import Constants from './Constants.js';
 
+const STATUS = {
+  INITIAL: 1,
+  STARTED: 1 << 1,
+  RESOLVED: 1 << 2,
+  FAILED: 1 << 3
+};
+
+const rowIndexes = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8]
+];
+
+const colIndexes = [
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8]
+];
 
 class App extends React.Component {
   
@@ -21,18 +39,25 @@ class App extends React.Component {
       }, []));
       return acc;
     }, []),
-    penValue: 1
+    penValue: 1,
+    stats: {
+      unknown: 0,
+      incorrect: 0
+    }
   };
   
   onStartGame = () => {
-    const {board} = this.state;
+    let {board, stats} = this.state;
+    board = generate(0, 0, Array(9).fill(Array(9).fill(Constants.DEFAULT_CANDIDATES)), board);
+    statistics(board, stats);
     this.setState((prevState) => ({
       status: STATUS.STARTED,
-      board: generate(0, 0, Array(9).fill(Array(9).fill(Constants.DEFAULT_CANDIDATES)), board),
-      penValue: prevState.penValue
+      board: board,
+      penValue: prevState.penValue,
+      stats: stats
     }));
     
-    console.debug(`APP: board=${JSON.stringify(this.state.board)}`);    
+    console.debug(`APP:onStartGame(): ${JSON.stringify(this.state)}`);    
   }
   
   onPenChanged = (penValue) => {
@@ -40,19 +65,44 @@ class App extends React.Component {
     this.setState((prevState) => ({
       status: prevState.status,
       board: prevState.board,
-      penValue: penValue
+      penValue: penValue,
+      stats: prevState.stats
     }));
   }
   
   onSquareClicked = (row, col) => {
     // console.debug(`onSquareClicked(${row}, ${col})`);
-    const {board, penValue} = this.state;
+    const {board, penValue, stats} = this.state;
+    if (board[row][col].display === " ") {
+      --stats.unknown;
+    }
+    if (penValue !== board[row][col].value) {
+      // incorrect guess
+      if (board[row][col].display === " " ||
+          board[row][col].display === board[row][col].value) {
+          // wasn't wrong before but is wrong now
+          ++stats.incorrect;          
+        }
+    } else {
+      // correct guess
+      if (board[row][col].display !== " " &&
+          board[row][col].display !== board[row][col].value) {
+          // was wrong before and is correct now
+          --stats.incorrect;          
+        }
+    }
+    if (stats.unknown === 0 && stats.incorrect === 0) {
+      // TODO
+      console.log(`RESOLVED!!!`);
+    }
     board[row][col].display = penValue;
     this.setState((prevState) => ({
       status: prevState.status,
       board: board,
-      penValue: prevState.penValue
+      penValue: prevState.penValue,
+      stats: stats
     }));
+    console.debug(`APP:onSquareClicked(${row}, ${col}): ${JSON.stringify(this.state)}`);        
   }
   
   render() {
@@ -106,25 +156,6 @@ export default App;
 // Helpers
 /////////////////////////////////////////////////////
 
-const rowIndexes = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8]
-];
-
-const colIndexes = [
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8]
-];
-
-const STATUS = {
-  INITIAL: 1,
-  STARTED: 1 << 1,
-  RESOLVED: 1 << 2,
-  FAILED: 1 << 3
-};
-
 function generate(row, col, candidates, board) {
 
   const updateCandidates = function(toRemove) {
@@ -160,13 +191,20 @@ function generate(row, col, candidates, board) {
   const nextCol = (col + 1) % 9;
   let game = null;
   
+  //
   // while there are still candidates for the square at [row][col] and we haven't found
   // a valid board   
+  //
   while ((candidates[row][col] & Constants.DEFAULT_CANDIDATES) > 0 && !game) {
+    
     const selection = Math.floor(Math.random() * 9) + 1; // random number from 1 to 9
+    
     if ((candidates[row][col] & (1 << selection)) > 0) { // the selected number is a valid candidate
+      
       candidates[row][col] &= ~(1 << selection); // remove the selected number as a candidate
+      
       const hide = Math.random() > 0.55; // TODO: may not leave enough clues to solve the puzzle
+      
       board[row][col] = {
         ...board[row][col], ...{ // merge 2 objects
           value: selection,
@@ -174,9 +212,22 @@ function generate(row, col, candidates, board) {
           mutable: hide
         }
       }
+      
+      // find a number for the next square
       game = generate(nextRow, nextCol, updateCandidates(selection), board);
     }
   }
   return game;
+}
+
+function statistics(board, stats) {
+  stats.unknown = 0;
+  stats.incorrect = 0;
+  board.forEach((grid) => {
+    grid.forEach((square) => {
+      if (square.display === " ")
+        ++stats.unknown;
+    });
+  });
 }
 
