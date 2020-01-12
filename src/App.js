@@ -87,6 +87,8 @@ class App extends React.Component {
   
   onSquareClicked = (row, col) => {
     
+    console.debug(`BEFORE:APP:onSquareClicked(${row}, ${col}): ${JSON.stringify(this.state.stats)} ${JSON.stringify(this.state.board[row][col])}`);
+        
     const {board, penValue, stats} = this.state;
     
     // reset when user clicks the same square again with the same display value
@@ -128,7 +130,7 @@ class App extends React.Component {
       elapsed: prevState.elapsed
     }));
     
-    // console.debug(`APP:onSquareClicked(${row}, ${col}): ${JSON.stringify(this.state)}`);
+    console.debug(`AFTER:APP:onSquareClicked(${row}, ${col}): ${JSON.stringify(this.state.stats)} ${JSON.stringify(this.state.board[row][col])}`);
   }
   
   onTimeout = () => {
