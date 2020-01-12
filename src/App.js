@@ -43,22 +43,31 @@ class App extends React.Component {
     let {board, stats} = this.state;
     board = generate(0, 0, Array(9).fill(Array(9).fill(Constants.DEFAULT_CANDIDATES)), board);
     statistics(board, stats);
+    
+    clearInterval(this.timer);
+    this.timer = setInterval(this.tick, 50);
+        
     this.setState((prevState) => ({
       status: Constants.STATUS.STARTED,
       board: board,
       penValue: prevState.penValue,
-      stats: stats
+      stats: stats,
+      start: new Date(),
+      elapsed: 0
     }));
     
     console.debug(`APP:onStartGame(): ${JSON.stringify(this.state)}`);    
   }
   
   onEndGame = () => {
+    clearInterval(this.timer);
     this.setState((prevState) => ({
       status: Constants.STATUS.FAILED,
       board: prevState.board,
       penValue: prevState.penValue,
-      stats: prevState.stats
+      stats: prevState.stats,
+      start: prevState.start,
+      elapsed: prevState.elapsed
     }));
   }
   
@@ -67,7 +76,9 @@ class App extends React.Component {
       status: prevState.status,
       board: prevState.board,
       penValue: penValue,
-      stats: prevState.stats
+      stats: prevState.stats,
+      start: prevState.start,
+      elapsed: prevState.elapsed
     }));
   }
   
@@ -97,14 +108,30 @@ class App extends React.Component {
       status: (stats.unknown === 0 && stats.incorrect === 0) ? Constants.STATUS.RESOLVED : prevState.status,
       board: board,
       penValue: prevState.penValue,
-      stats: stats
+      stats: stats,
+      start: prevState.start,
+      elapsed: prevState.elapsed
     }));
+    if (this.state.status === Constants.STATUS.RESOLVED) {
+      clearInterval(this.timer);
+    }
     // console.debug(`APP:onSquareClicked(${row}, ${col}): ${JSON.stringify(this.state)}`);
+  }
+  
+  tick = () => {
+    this.setState((prevState) => ({
+      status: prevState.status,
+      board: prevState.board,
+      penValue: prevState.penValue,
+      stats: prevState.stats,
+      start: prevState.start,
+      elapsed: new Date() - prevState.start
+    }))
   }
   
   render() {
     
-    const {status, board, penValue, stats} = this.state;
+    const {status, board, penValue, stats, elapsed} = this.state;
     
     return (
       <div className="App">
@@ -121,29 +148,31 @@ class App extends React.Component {
           ) : status === Constants.STATUS.FAILED ? (
             <div>
               <span>{stats.incorrect > 0 ? (
-                <p>Sorry, you got {stats.incorrect} wrong so far.</p>
+                <p>You got {stats.incorrect} wrong so far.</p>
               ) : (
                 <p>You haven&#39;t finished the game.</p>
               )
               }</span>
-              <p>Don&#39;t give up. The more you play, the better you get!</p>
               <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Play again!</button>                  
             </div>
           ) : (
-            <div className="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
-              <div className="btn-group mr-2" role="group" aria-label="First group">
-                <button type="button" className="btn btn-secondary" onClick={this.onStartGame}>New Beginning</button>
-                <button type="button" className="btn btn-primary" onClick={this.onEndGame}>Verdict</button>            
+            <div>
+              <p><b>{(elapsed / 10).toFixed(1)} seconds</b></p>;            
+              <div className="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+                <div className="btn-group mr-2" role="group" aria-label="First group">
+                  <button type="button" className="btn btn-secondary" onClick={this.onStartGame}>New Beginning</button>
+                  <button type="button" className="btn btn-primary" onClick={this.onEndGame}>Verdict</button>            
+                </div>
+                <div className="btn-group mr-2" role="group" aria-label="Second group">{
+                  Constants.DEFAULT_VALUES.map((v) => {
+                    return penValue === v ? (
+                      <button type="button" className="btn btn-outline-primary focus" onClick={() => this.onPenChanged(v)} key={v}>{v}</button>
+                    ) : (
+                      <button type="button" className="btn btn-outline-primary" onClick={() => this.onPenChanged(v)} key={v}>{v}</button>
+                    )
+                  })
+                }</div>
               </div>
-              <div className="btn-group mr-2" role="group" aria-label="Second group">{
-                Constants.DEFAULT_VALUES.map((v) => {
-                  return penValue === v ? (
-                    <button type="button" className="btn btn-outline-primary focus" onClick={() => this.onPenChanged(v)} key={v}>{v}</button>
-                  ) : (
-                    <button type="button" className="btn btn-outline-primary" onClick={() => this.onPenChanged(v)} key={v}>{v}</button>
-                  )
-                })
-              }</div>
             </div>
           )
         }</div>
