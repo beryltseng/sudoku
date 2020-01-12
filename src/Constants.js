@@ -11,5 +11,5 @@ module.exports = Object.freeze({
     FAILED: 1 << 3,
     TIMEOUT: 1 << 4
   },
-  TIME_LIMIT: 300000
+  TIME_LIMIT: 600000
 });
