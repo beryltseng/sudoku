@@ -160,7 +160,7 @@ class App extends React.Component {
             </div>
           ) : status === Constants.STATUS.RESOLVED ? (
             <div>
-              <p>You are a genius!!!</p>
+              <p>You are a genius!!! It only took you {formatTime(elapsed)}.</p>
               <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Play again!</button>            
             </div>
           ) : status === Constants.STATUS.FAILED || status === Constants.STATUS.TIMEOUT ? (
