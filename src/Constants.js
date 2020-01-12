@@ -8,6 +8,8 @@ module.exports = Object.freeze({
     INITIAL: 1,
     STARTED: 1 << 1,
     RESOLVED: 1 << 2,
-    FAILED: 1 << 3
-  }
+    FAILED: 1 << 3,
+    TIMEOUT: 1 << 4
+  },
+  TIME_LIMIT: 300000
 });

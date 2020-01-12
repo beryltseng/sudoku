@@ -35,17 +35,15 @@ class App extends React.Component {
     penValue: 1,
     stats: {
       unknown: 0,
-      incorrect: 0
+      error: 0
     }
   };
   
   onStartGame = () => {
+    
     let {board, stats} = this.state;
     board = generate(0, 0, Array(9).fill(Array(9).fill(Constants.DEFAULT_CANDIDATES)), board);
-    statistics(board, stats);
-    
-    clearInterval(this.timer);
-    this.timer = setInterval(this.tick, 50);
+    updateStats(board, stats);
         
     this.setState((prevState) => ({
       status: Constants.STATUS.STARTED,
@@ -56,11 +54,15 @@ class App extends React.Component {
       elapsed: 0
     }));
     
+    setTimeout(() => {
+      this.onTimeout();
+    }, 1000);
+    
     console.debug(`APP:onStartGame(): ${JSON.stringify(this.state)}`);    
   }
   
   onEndGame = () => {
-    clearInterval(this.timer);
+    
     this.setState((prevState) => ({
       status: Constants.STATUS.FAILED,
       board: prevState.board,
@@ -72,6 +74,7 @@ class App extends React.Component {
   }
   
   onPenChanged = (penValue) => {
+    
     this.setState((prevState) => ({
       status: prevState.status,
       board: prevState.board,
@@ -83,7 +86,9 @@ class App extends React.Component {
   }
   
   onSquareClicked = (row, col) => {
+    
     const {status, board, penValue, stats} = this.state;
+    
     // if (status === Constants.STATUS.RESOLVED || status === Constants.STATUS.FAILED) return;
     if (board[row][col].display === " ") {
       --stats.unknown;
@@ -93,40 +98,50 @@ class App extends React.Component {
       if (board[row][col].display === " " ||
           board[row][col].display === board[row][col].value) {
           // wasn't wrong before but is wrong now
-          ++stats.incorrect;          
+          ++stats.error;          
         }
     } else {
       // correct guess
       if (board[row][col].display !== " " &&
           board[row][col].display !== board[row][col].value) {
           // was wrong before and is correct now
-          --stats.incorrect;          
+          --stats.error;          
         }
     }
+    
     board[row][col].display = penValue;
+    
     this.setState((prevState) => ({
-      status: (stats.unknown === 0 && stats.incorrect === 0) ? Constants.STATUS.RESOLVED : prevState.status,
+      status: (stats.unknown === 0 && stats.error === 0) ? Constants.STATUS.RESOLVED : prevState.status,
       board: board,
       penValue: prevState.penValue,
       stats: stats,
       start: prevState.start,
       elapsed: prevState.elapsed
     }));
-    if (this.state.status === Constants.STATUS.RESOLVED) {
-      clearInterval(this.timer);
-    }
+    
     // console.debug(`APP:onSquareClicked(${row}, ${col}): ${JSON.stringify(this.state)}`);
   }
   
-  tick = () => {
+  onTimeout = () => {
+    
+    const elapsed = new Date() - this.state.start;
+    const status = elapsed >= Constants.TIME_LIMIT ? Constants.STATUS.TIMEOUT : this.state.status;
+    
+    if (status === Constants.STATUS.STARTED) {
+      setTimeout(() => {
+        this.onTimeout();
+      }, 1000);
+    }    
+    
     this.setState((prevState) => ({
-      status: prevState.status,
+      status: status,
       board: prevState.board,
       penValue: prevState.penValue,
       stats: prevState.stats,
       start: prevState.start,
-      elapsed: new Date() - prevState.start
-    }))
+      elapsed: elapsed
+    }));
   }
   
   render() {
@@ -139,16 +154,21 @@ class App extends React.Component {
         <Board board={board} status={status} handler={(row, col) => this.onSquareClicked(row, col)}/>
     
         <div className="dashboard">{status === Constants.STATUS.INITIAL ? (
-            <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Let&#39;s go!</button>
+            <div>
+              <p>You have {formatTime(Constants.TIME_LIMIT)} to finish the puzzle.</p>
+              <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Let&#39;s go!</button>
+            </div>
           ) : status === Constants.STATUS.RESOLVED ? (
             <div>
               <p>You are a genius!!!</p>
               <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Play again!</button>            
             </div>
-          ) : status === Constants.STATUS.FAILED ? (
+          ) : status === Constants.STATUS.FAILED || status === Constants.STATUS.TIMEOUT ? (
             <div>
-              <span>{stats.incorrect > 0 ? (
-                <p>You got {stats.incorrect} wrong so far.</p>
+              <span>{stats.error > 0 ? (
+                <p>You got {stats.error} wrong so far.</p>
+              ) : status === Constants.STATUS.TIMEOUT ? (
+                <p>TIme&#39;s up.</p>
               ) : (
                 <p>You haven&#39;t finished the game.</p>
               )
@@ -157,7 +177,7 @@ class App extends React.Component {
             </div>
           ) : (
             <div>
-              <p><b>{(elapsed / 10).toFixed(1)} seconds</b></p>;            
+              <p><strong>{formatTime(Constants.TIME_LIMIT - elapsed)}</strong></p>            
               <div className="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
                 <div className="btn-group mr-2" role="group" aria-label="First group">
                   <button type="button" className="btn btn-secondary" onClick={this.onStartGame}>New Beginning</button>
@@ -179,7 +199,7 @@ class App extends React.Component {
     
         <div className="footer">
           <div>
-            2020 © <a className="author" href="https://www.linkedin.com/in/beryl-tseng/">Beryl Tseng</a>
+            2020 &#169; <a className="author" href="https://www.linkedin.com/in/beryl-tseng/">Beryl Tseng</a>
           </div>
           <div>
             <a href="https://github.com/beryltseng/sukodu/issues/new">I want to tell you about a problem (You will need a GitHub account).</a>
@@ -262,9 +282,9 @@ function generate(row, col, candidates, board) {
   return game;
 }
 
-function statistics(board, stats) {
+function updateStats(board, stats) {
   stats.unknown = 0;
-  stats.incorrect = 0;
+  stats.error = 0;
   board.forEach((grid) => {
     grid.forEach((square) => {
       if (square.display === " ")
@@ -273,3 +293,11 @@ function statistics(board, stats) {
   });
 }
 
+function formatTime(ms) {
+  const hours = Math.floor(ms / 3600000);
+  ms = ms % 3600000;
+  const minutes = Math.floor(ms / 60000);
+  ms = ms % 60000;
+  const seconds = Math.floor(ms / 1000);
+  return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+}
