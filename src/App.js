@@ -87,29 +87,37 @@ class App extends React.Component {
   
   onSquareClicked = (row, col) => {
     
-    const {status, board, penValue, stats} = this.state;
+    const {board, penValue, stats} = this.state;
     
-    // if (status === Constants.STATUS.RESOLVED || status === Constants.STATUS.FAILED) return;
-    if (board[row][col].display === " ") {
+    // reset when user clicks the same square again with the same display value
+    const displayValue = board[row][col].display === penValue ? " " : penValue;
+    
+    if (displayValue === " ") {
+      // back to unknown
+      ++stats.unknown;
+    } else if (board[row][col].display === " ") {
+      // didn't already have a guess before
       --stats.unknown;
     }
-    if (penValue !== board[row][col].value) {
-      // incorrect guess
-      if (board[row][col].display === " " ||
-          board[row][col].display === board[row][col].value) {
-          // wasn't wrong before but is wrong now
-          ++stats.error;          
-        }
-    } else {
-      // correct guess
-      if (board[row][col].display !== " " &&
-          board[row][col].display !== board[row][col].value) {
-          // was wrong before and is correct now
-          --stats.error;          
-        }
+    
+    // was correct or blank before and is wrong now (setting it back to blank doesn't
+    // count as being wrong)
+    if ((board[row][col].display === board[row][col].value ||
+         board[row][col].display === " ") &&
+        displayValue !== board[row][col].value &&
+        displayValue !== " ") {
+      ++stats.error;
     }
     
-    board[row][col].display = penValue;
+    // was wrong before but is correct now or is reset back to blank
+    if (board[row][col].display !== board[row][col].value &&
+        board[row][col].display !== " " &&
+        (displayValue === board[row][col].value ||
+         displayValue === " ")) {
+      --stats.error;
+    }
+    
+    board[row][col].display = displayValue;
     
     this.setState((prevState) => ({
       status: (stats.unknown === 0 && stats.error === 0) ? Constants.STATUS.RESOLVED : prevState.status,
@@ -168,7 +176,7 @@ class App extends React.Component {
               <span>{stats.error > 0 ? (
                 <p>You got {stats.error} wrong so far.</p>
               ) : status === Constants.STATUS.TIMEOUT ? (
-                <p>TIme&#39;s up.</p>
+                <p>Time&#39;s up.</p>
               ) : (
                 <p>You haven&#39;t finished the game.</p>
               )
