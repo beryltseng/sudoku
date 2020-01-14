@@ -180,7 +180,7 @@ class App extends React.Component {
               ) : status === Constants.STATUS.TIMEOUT ? (
                 <p>Time&#39;s up.</p>
               ) : (
-                <p>You haven&#39;t finished the game.</p>
+                <p>You didn&#39;t get any wrong but you did&#39;t finish the game.</p>
               )
               }</span>
               <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Play again!</button>                  
@@ -228,6 +228,43 @@ export default App;
 // Helpers
 /////////////////////////////////////////////////////
 
+/*
+ * This is a recursive function to generate a sukodu board, starting from board[0][0].
+ *
+ * The candidates matrix holds possible candidates for the corresponding element in the
+ * board matrix. Each bit represents one possible value. E.g. if bit 1 is on for
+ * board[0][0], 1 is a possible candidate for board[0][0]. Similarily, if bit 9 is on for
+ * board[0][0], 9 is a possible candidate for board[0][0].
+ *
+ * Once a candidate is picked for board[row][col], that value will be removed as a
+ * candidate for all elements on the same row, column, and grid and it will kick off next
+ * iteration. It backtracks if the selections do not result in a valid sudoku board;
+ * otherwise, it continues until a valid board is found.
+ *
+ * Each element in the board matrix represents a square on the board with the following
+ * properties:
+ *
+ *   row:
+ *      Its row value in the board matrix
+ *
+ *   col:
+ *      Its column value in the board matrix
+ *
+ *   value:
+ *      The value for the square
+ *
+ *   display:
+ *      The display value for the square. The initial value is " ", i.e. blank,
+ *      if it's to be left for the user to determine. Its corresponding mutable
+ *      property will be true in this case. This will be used to hold user's
+ *      guess when the game starts. If this square is a clue, it will contain
+ *      the same value as the value property and mutable property will be false
+ *      in this case.
+ *
+ *   mutable:
+ *      This flag determine whether the display value for this square can be
+ *      changed. true if yes; otherwise false.
+ */
 function generate(row, col, candidates, board) {
 
   const updateCandidates = function(toRemove) {
@@ -275,7 +312,9 @@ function generate(row, col, candidates, board) {
       
       candidates[row][col] &= ~(1 << selection); // remove the selected number as a candidate
       
-      const hide = Math.random() > 0.55; // TODO: may not leave enough clues to solve the puzzle
+      // Randomly decide whether this square should be a clue.
+      // TODO: This may not leave enough clues to solve the puzzle or may be ambiguous
+      const hide = Math.random() > 0.55;
       
       board[row][col] = {
         ...board[row][col], ...{ // merge 2 objects
@@ -285,13 +324,16 @@ function generate(row, col, candidates, board) {
         }
       }
       
-      // find a number for the next square
+      // find a value for the next square
       game = generate(nextRow, nextCol, updateCandidates(selection), board);
     }
   }
   return game;
 }
 
+/*
+ * This function counts and updates the number of blank squares on the board.
+ */
 function updateStats(board, stats) {
   stats.unknown = 0;
   stats.error = 0;
@@ -303,7 +345,15 @@ function updateStats(board, stats) {
   });
 }
 
+/*
+ * This function formats time in milliseconds and returns a string in the
+ * format of HH:MM:SS ignoring values greater than the hour unit.
+ *
+ * e.g. 86420000 is displayed as 00:00:20.
+ * e.g. 86400000 is displayed as 00:00:00, not 24:00:00.
+ */
 function formatTime(ms) {
+  ms = ms % 86400000; // do not handle days
   const hours = Math.floor(ms / 3600000);
   ms = ms % 3600000;
   const minutes = Math.floor(ms / 60000);
