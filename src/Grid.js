@@ -1,6 +1,9 @@
 import React from 'react';
 import Square from './Square.js';
 
+/*
+ * Each grid displays one row of data from App's board
+ */
 class Grid extends React.Component {
   
   getSquare = (i) => {

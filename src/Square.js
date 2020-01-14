@@ -1,6 +1,11 @@
 import React from 'react';
 import Constants from './Constants.js';
 
+/*
+ * If current status is FAILED or TIMEOUT, show the square in error state if its display value doesn't
+ * match its value.
+ * If current status is FAILED, TIMEOUT, or RESOLVED or if the square is not mutable, it's not clickable.
+ */
 class Square extends React.Component {
 
   render() {

@@ -78,7 +78,8 @@ code {
   font-family: 'Nothing You Could Do', cursive;
 }
 
-
+/* Responsive
+------------------------------------*/
 @media (min-width: 540px) {
   .square {
     font-size: 25px;    
