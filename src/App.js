@@ -188,12 +188,12 @@ class App extends React.Component {
           ) : (
             <div>
               <p><strong>{formatTime(Constants.TIME_LIMIT - elapsed)}</strong></p>            
-              <div className="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
-                <div className="btn-group mr-2" role="group" aria-label="First group">
+              <div className="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                <div className="btn-group" role="group" aria-label="First group">
                   <button type="button" className="btn btn-secondary" onClick={this.onStartGame}>New Beginning</button>
                   <button type="button" className="btn btn-primary" onClick={this.onEndGame}>Verdict</button>            
                 </div>
-                <div className="btn-group mr-2" role="group" aria-label="Second group">{
+                <div className="btn-group" role="group" aria-label="Second group">{
                   Constants.DEFAULT_VALUES.map((v) => {
                     return penValue === v ? (
                       <button type="button" className="btn btn-outline-primary focus" onClick={() => this.onPenChanged(v)} key={v}>{v}</button>

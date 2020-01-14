@@ -67,9 +67,15 @@ code {
 }
 
 .btn-toolbar {
+  display: flex;
   justify-content: center;
+  margin-right: 3px;
 }
 
+.btn-group {
+  padding: 10px;
+}  
+  
 /* footer
 ------------------------------------*/
 .author {
