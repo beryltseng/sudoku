@@ -33,10 +33,7 @@ class App extends React.Component {
       return acc;
     }, []),
     penValue: 1,
-    stats: {
-      unknown: 0,
-      error: 0
-    }
+    stats: {}
   };
   
   onStartGame = () => {
@@ -119,10 +116,13 @@ class App extends React.Component {
       --stats.error;
     }
     
+    // update the sums for the row, column, and grid
+    updateSums(stats, row, col, (displayValue === " " ? 0 : displayValue) - board[row][col].display);
+    
     board[row][col].display = displayValue;
     
     this.setState((prevState) => ({
-      status: (stats.unknown === 0 && stats.error === 0) ? Constants.STATUS.RESOLVED : prevState.status,
+      status: (stats.unknown === 0 && (stats.error === 0 || stats.checksum === 0)) ? Constants.STATUS.RESOLVED : prevState.status,
       board: board,
       penValue: prevState.penValue,
       stats: stats,
@@ -170,7 +170,7 @@ class App extends React.Component {
             </div>
           ) : status === Constants.STATUS.RESOLVED ? (
             <div>
-              <p>You are a genius!!! It only took you {formatTime(elapsed)}.</p>
+              <p>You are a genius!!! It only took you {formatTime(elapsed)}.  checksum={stats.checksum} errors={stats.error}</p>
               <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Play again!</button>            
             </div>
           ) : status === Constants.STATUS.FAILED || status === Constants.STATUS.TIMEOUT ? (
@@ -332,18 +332,58 @@ function generate(row, col, candidates, board) {
 }
 
 /*
- * This function counts and updates the number of blank squares on the board.
+ * This function updates statistics about the board.
  */
 function updateStats(board, stats) {
   stats.unknown = 0;
   stats.error = 0;
-  board.forEach((grid) => {
-    grid.forEach((square) => {
-      if (square.display === " ")
+  stats.rowSums = Array(9).fill(0);
+  stats.columnSums = Array(9).fill(0);
+  stats.gridSums = Array(9).fill(0);
+  stats.checksum = (1 << (9 * 3)) - 1;
+  board.forEach((grid, gridIndex) => {
+    grid.forEach((square, squareIndex) => {
+      if (square.display === " ") {
         ++stats.unknown;
+      } else {
+        updateSums(stats, gridIndex, squareIndex, square.value);
+      }
     });
   });
 }
+
+function updateSums(stats, gridIndex, squareIndex, value) {
+  
+  const unsetBit = function(bit) {
+    stats.checksum &= ~(1 << bit);
+  }
+
+  const setBit = function(bit) {
+    stats.checksum |= (1 << bit);
+  }
+  
+  const updateSum = function(array, offset) {
+    return function(index, value) {
+      array[index] += value;
+      if (array[index] === Constants.SUM) {
+        // set the corresponding bit to 0 when sum is 45        
+        unsetBit(index + (9 * offset));
+      } else {
+        // set the corresponding bit to 1 when sum is not 45        
+        setBit(index + (9 * offset));
+      }
+    }
+  }
+    
+  const updateRowSum = updateSum(stats.rowSums, 0);
+  const updateColumnSum = updateSum(stats.columnSums, 1);
+  const updateGridSum = updateSum(stats.gridSums, 2);
+  
+  updateRowSum(Math.floor(gridIndex / 3) * 3 + Math.floor(squareIndex / 3), value);
+  updateColumnSum((gridIndex % 3) * 3 + (squareIndex % 3), value);
+  updateGridSum(gridIndex, value);
+}
+
 
 /*
  * This function formats time in milliseconds and returns a string in the

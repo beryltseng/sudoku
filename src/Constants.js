@@ -8,6 +8,9 @@ module.exports = Object.freeze({
     return acc | (1 << (curr + 1))
   }, 0),
   
+  // sum from 1...9
+  SUM: 45,
+  
   // possible statuses of a game
   STATUS : {
     INITIAL: 1,
