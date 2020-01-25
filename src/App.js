@@ -173,7 +173,7 @@ class App extends React.Component {
               <p>You are a genius!!! It only took you {formatTime(elapsed)}.</p>
               {process.env.NODE_ENV === 'development' ? (
                 <p>errors={stats.error} checksum={stats.checksum}</p>
-              ) : (<p></p>)}
+              ) : (<span></span>)}
               <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Play again!</button>            
             </div>
           ) : status === Constants.STATUS.FAILED || status === Constants.STATUS.TIMEOUT ? (
