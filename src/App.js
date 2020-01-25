@@ -122,6 +122,10 @@ class App extends React.Component {
     board[row][col].display = displayValue;
     
     this.setState((prevState) => ({
+      // The puzzle is resolved if:
+      // 1) all are filled and as expected, i.e. unknown === 0 and error === 0
+      // 2) all are filled but not as expected but is an alternative solution,
+      //    i.e. unknown === 0 and checksum === 0
       status: (stats.unknown === 0 && (stats.error === 0 || stats.checksum === 0)) ? Constants.STATUS.RESOLVED : prevState.status,
       board: board,
       penValue: prevState.penValue,
@@ -170,10 +174,11 @@ class App extends React.Component {
             </div>
           ) : status === Constants.STATUS.RESOLVED ? (
             <div>
-              <p>You are a genius!!! It only took you {formatTime(elapsed)}.</p>
-              {process.env.NODE_ENV === 'development' ? (
-                <p>errors={stats.error} checksum={stats.checksum}</p>
-              ) : (<span></span>)}
+              <p>You are a genius!!! It only took you {formatTime(elapsed)}. {
+                process.env.NODE_ENV === 'development' ? (
+                  <span>errors={stats.error} checksum={stats.checksum}</span>
+                ) : (<span></span>)
+              }</p>
               <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Play again!</button>            
             </div>
           ) : status === Constants.STATUS.FAILED || status === Constants.STATUS.TIMEOUT ? (
@@ -338,12 +343,20 @@ function generate(row, col, candidates, board) {
  * This function updates statistics about the board.
  */
 function updateStats(board, stats) {
+  
   stats.unknown = 0;
   stats.error = 0;
   stats.rowSums = Array(9).fill(0);
   stats.columnSums = Array(9).fill(0);
   stats.gridSums = Array(9).fill(0);
+  // Initialize checksum to 0b0000 0011 1111 11111 1111 1111 1111 1111.
+  // The first 9 bits are for rowSums, where each bit represents one row. 1 if the
+  // corresponding row does not sum up to 45; otherwise 0.
+  // Similarily, the next 9 bits for columnSums and the following 9 bits for gridSums.
+  // This is used to quickly determine whether the puzzle is resolved. 0 means that all
+  // rows, columns, and grids sum up to 45; therefore, a valid solution.
   stats.checksum = (1 << (9 * 3)) - 1;
+  
   board.forEach((grid, gridIndex) => {
     grid.forEach((square, squareIndex) => {
       if (square.display === " ") {
@@ -355,38 +368,45 @@ function updateStats(board, stats) {
   });
 }
 
-function updateSums(stats, gridIndex, squareIndex, value) {
-  
-  const unsetBit = function(bit) {
-    stats.checksum &= ~(1 << bit);
-  }
-
-  const setBit = function(bit) {
-    stats.checksum |= (1 << bit);
-  }
-  
-  const updateSum = function(array, offset) {
-    return function(index, value) {
-      array[index] += value;
-      if (array[index] === Constants.SUM) {
-        // set the corresponding bit to 0 when sum is 45        
-        unsetBit(index + (9 * offset));
-      } else {
-        // set the corresponding bit to 1 when sum is not 45        
-        setBit(index + (9 * offset));
-      }
-    }
-  }
-    
-  const updateRowSum = updateSum(stats.rowSums, 0);
-  const updateColumnSum = updateSum(stats.columnSums, 1);
-  const updateGridSum = updateSum(stats.gridSums, 2);
-  
-  updateRowSum(Math.floor(gridIndex / 3) * 3 + Math.floor(squareIndex / 3), value);
-  updateColumnSum((gridIndex % 3) * 3 + (squareIndex % 3), value);
-  updateGridSum(gridIndex, value);
+/*
+ * returns the given checksum with the specified bit unset
+ */
+function unsetBit(checksum, bit) {
+  return checksum & ~(1 << bit);
 }
 
+/*
+ * returns the given checksum with the specified bit set
+ */
+function setBit(checksum, bit) {
+  return checksum | (1 << bit);
+}
+
+/*
+ * This function updates adds the given value to the index-th element of the
+ * specified sum array and updates the corresponding checksum
+ */
+function updateSum(stats, array, offset, index, value) {
+  
+  stats[array][index] += value;
+  
+  if (stats[array][index] === Constants.SUM) {
+    // set the corresponding checksum bit to 0 when sum is 45        
+    stats.checksum = unsetBit(stats.checksum, index + (9 * offset));
+  } else {
+    // set the corresponding checksum bit to 1 when sum is not 45        
+    stats.checksum = setBit(stats.checksum, index + (9 * offset));
+  }
+}
+
+/*
+ * This function updates the 3 sum arrays and checksum
+ */
+function updateSums(stats, gridIndex, squareIndex, value) {
+  updateSum(stats, 'rowSums', 0, Math.floor(gridIndex / 3) * 3 + Math.floor(squareIndex / 3), value);
+  updateSum(stats, 'columnSums', 1, (gridIndex % 3) * 3 + (squareIndex % 3), value);
+  updateSum(stats, 'gridSums', 2, gridIndex, value);
+}
 
 /*
  * This function formats time in milliseconds and returns a string in the
