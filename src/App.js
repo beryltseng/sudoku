@@ -55,7 +55,7 @@ class App extends React.Component {
       this.onTimeout();
     }, 1000);
     
-    console.debug(`APP:onStartGame(): ${JSON.stringify(this.state)}`);    
+    console.debug(`APP:onStartGame(): ${JSON.stringify(this.state)} ${process.env.NODE_ENV}`);    
   }
   
   onEndGame = () => {
@@ -170,7 +170,10 @@ class App extends React.Component {
             </div>
           ) : status === Constants.STATUS.RESOLVED ? (
             <div>
-              <p>You are a genius!!! It only took you {formatTime(elapsed)}.  checksum={stats.checksum} errors={stats.error}</p>
+              <p>You are a genius!!! It only took you {formatTime(elapsed)}.</p>
+              {process.env.NODE_ENV === 'development' ? (
+                <p>errors={stats.error} checksum={stats.checksum}</p>
+              ) : (<p></p>)}
               <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Play again!</button>            
             </div>
           ) : status === Constants.STATUS.FAILED || status === Constants.STATUS.TIMEOUT ? (
