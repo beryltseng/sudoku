@@ -24,8 +24,11 @@ code {
 /*  width: 50px;
   height: 50px;*/
   margin: 2px;
-  padding: 2px;
+  padding: 2px;    
+  display: table-cell;
+    
   text-align: center;
+  justify-content: center;  
 }
 
 .square:focus {
@@ -44,20 +47,38 @@ code {
 /* grid
 ------------------------------------*/
 .grid {
+ display: table;
+/*  grid-gap: 0px;
+  grid-column-gap: 0;
+  grid-row-gap: 0;*/
   border: 2px solid #616A6B;
-  display: inline-grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  justify-content: center;  
 }
 
 /* board
 ------------------------------------*/
 .board {
-  display: inline-grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-/*  margin: 10px;*/
-}
+/*  display: table;*/
+/*  width: 80%;
+  margin: 0;
+  padding: 0;*/
+  justify-content: center;
+/*  border: 2px solid red;*/
+} 
+
+/* grid
+------------------------------------*/
+/*.grid {
+  display: flex;
+}*/
+
+/* board
+------------------------------------*/
+/*.board {
+  display: grid;
+  width: 80%;
+  justify-content: center;
+}*/
 
 /* dashboard
 ------------------------------------*/
@@ -100,4 +121,23 @@ code {
     width: 25px;
     height: 25px;
   }
+}
+
+@supports (display: inline-grid) {
+  /* grid
+  ------------------------------------*/
+  .grid {
+    border: 2px solid #616A6B;
+    display: inline-grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+  }
+
+  /* board
+  ------------------------------------*/
+  .board {
+    display: inline-grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+  } 
 }
