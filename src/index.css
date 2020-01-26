@@ -25,7 +25,6 @@ code {
   height: 50px;*/
   margin: 2px;
   padding: 2px;    
-/*  display: table-cell;*/
     
   text-align: center;
   justify-content: center;  
@@ -54,33 +53,15 @@ code {
 /* board
 ------------------------------------*/
 .board {
-/*  display: table;*/
-/*  width: 80%;
-  margin: 0;
-  padding: 0;*/
   justify-content: center;
-/*  border: 2px solid red;*/
 } 
-
-/* grid
-------------------------------------*/
-/*.grid {
-  display: flex;
-}*/
-
-/* board
-------------------------------------*/
-/*.board {
-  display: grid;
-  width: 80%;
-  justify-content: center;
-}*/
 
 /* dashboard
 ------------------------------------*/
 .dashboard {
   border-bottom: 2px dotted #616A6B;
   margin: 10px;
+  clear: both;
 }
 
 .btn-toolbar {
@@ -123,7 +104,6 @@ code {
   /* grid
   ------------------------------------*/
   .grid {
-/*    border: 2px solid #616A6B;*/
     display: inline-grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
@@ -142,7 +122,9 @@ code {
   
   .square {
     float: left;
-    width: calc(33.333333% - 10px);    
+    width: calc(33% - 10px);
+/*    width: 1fr 1fr 1fr;*/
+    margin: 5px;     
   }
   
   .grid {
@@ -150,12 +132,13 @@ code {
 /*    display: flex;*/
     float: left;
 /*    width: calc(11.111111% - 20px);*/
-    width: calc(33.333333% - 20px);    
+    width: calc(33% - 10px);
+/*    width: 1fr 1fr 1fr;*/
+    margin: 0; 
   }
   
-/*  .board {
-    display: flex;
-    float: left;
-    width: calc(33.333333% - 20px);
-  }*/
+  .board {
+    border: 2px solid red;
+/*    clear: both;*/
+  }
 }
