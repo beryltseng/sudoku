@@ -139,10 +139,18 @@ code {
 }
 
 @supports not (display: grid) {
-  .grid {
-    display: flex;
+  
+  .square {
     float: left;
-    width: calc(33.333333% - 20px);
+    width: calc(33.333333% - 10px);    
+  }
+  
+  .grid {
+/*    display: block;*/
+/*    display: flex;*/
+    float: left;
+/*    width: calc(11.111111% - 20px);*/
+    width: calc(33.333333% - 20px);    
   }
   
 /*  .board {
