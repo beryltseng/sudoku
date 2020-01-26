@@ -25,7 +25,7 @@ code {
   height: 50px;*/
   margin: 2px;
   padding: 2px;    
-  display: table-cell;
+/*  display: table-cell;*/
     
   text-align: center;
   justify-content: center;  
@@ -47,10 +47,6 @@ code {
 /* grid
 ------------------------------------*/
 .grid {
- display: table;
-/*  grid-gap: 0px;
-  grid-column-gap: 0;
-  grid-row-gap: 0;*/
   border: 2px solid #616A6B;
   justify-content: center;  
 }
@@ -123,11 +119,11 @@ code {
   }
 }
 
-@supports (display: inline-grid) {
+@supports (display: grid) {
   /* grid
   ------------------------------------*/
   .grid {
-    border: 2px solid #616A6B;
+/*    border: 2px solid #616A6B;*/
     display: inline-grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
@@ -140,4 +136,18 @@ code {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
   } 
+}
+
+@supports not (display: grid) {
+  .grid {
+    display: flex;
+    float: left;
+    width: calc(33.333333% - 20px);
+  }
+  
+/*  .board {
+    display: flex;
+    float: left;
+    width: calc(33.333333% - 20px);
+  }*/
 }
