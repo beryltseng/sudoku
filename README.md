@@ -16,7 +16,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
 
-![ScreenShot](https://github.com/beryltseng/sukodu/blob/master/public/ScreenShot.png)
+![ScreenShot](https://github.com/beryltseng/sudoku/blob/master/public/ScreenShot.png)
 
 ## `npm run build`
 
