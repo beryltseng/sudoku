@@ -139,6 +139,8 @@ class App extends React.Component {
   
   onTimeout = () => {
     
+    if (this.state.status !== Constants.STATUS.STARTED) return;
+    
     const elapsed = new Date() - this.state.start;
     const status = elapsed >= Constants.TIME_LIMIT ? Constants.STATUS.TIMEOUT : this.state.status;
     
