@@ -172,7 +172,7 @@ class App extends React.Component {
         <div className="dashboard">{status === Constants.STATUS.INITIAL ? (
             <div>
               <p>You have {formatTime(Constants.TIME_LIMIT)} to finish the puzzle.</p>
-              <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame}>Let&#39;s go!</button>
+              <button type="button" className="btn btn-primary mb-3" onClick={this.onStartGame} id="NewGame">Let&#39;s go!</button>
             </div>
           ) : status === Constants.STATUS.RESOLVED ? (
             <div>
