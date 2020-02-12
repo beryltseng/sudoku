@@ -222,7 +222,7 @@ class App extends React.Component {
             &#169; 2020 <a className="author" href="https://www.linkedin.com/in/beryl-tseng/">Beryl Tseng</a>
           </div>
           <div>
-            <a href="https://github.com/beryltseng/sukodu/issues/new">I want to tell you about a problem (You will need a GitHub account).</a>
+            <a href="https://github.com/beryltseng/sudoku/issues/new">I want to tell you about a problem (You will need a GitHub account).</a>
           </div>
         </div>
         
