@@ -58,7 +58,6 @@ describe('app state validations', () => {
 
 function isBoardValid(board) {
   // console.log(`board: ${JSON.stringify(board)}`);
-  
   return (areGridsValid(board) &&
           areRowsValid(board) &&
           areColumnsValid(board));
@@ -96,5 +95,4 @@ function areColumnsValid(board) {
       }, 0) + accumulator;
     }, 0) === Constants.SUM;
   });
-  // return true;
 }
