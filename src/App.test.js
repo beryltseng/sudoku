@@ -22,3 +22,16 @@ test('game is started', async () => {
   const verdictButton = await findByText(/Verdict/);
   expect(verdictButton).not.toBeNull();
 });
+
+
+// enzyme setup
+import { configure } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+configure({ adapter: new Adapter() });
+import { shallow } from 'enzyme';
+
+test('initial app states', () => {
+  const component = shallow(<App />);
+  expect(component.state('status')).toBe(1);
+  expect(component.state('penValue')).toBe(1);
+});
