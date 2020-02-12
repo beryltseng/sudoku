@@ -51,7 +51,21 @@ describe('app state validations', () => {
     // startButton.props().onClick();
     expect(component.state('status')).toBe(2);
     expect(component.state('penValue')).toBe(1);
-    console.log('------BOARD------');
-    console.log(JSON.stringify(component.state('board')));
+    expect(isBoardValid(component.state('board'))).toBe(true);
   });  
 });
+
+function isBoardValid(board) {
+  // console.log(`board: ${JSON.stringify(board)}`);
+  
+  // check each grid
+  if (board.every((grid) => {
+    return  grid.reduce((acc, curr) => {
+      acc += curr.value;
+      return acc;
+    }, 0) === 45;
+  })) {
+    return true;
+  }
+  return false;
+}
