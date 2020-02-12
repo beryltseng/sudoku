@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import App from './App';
+import Constants from './Constants';
 
 describe('rendering tests', () => {
   
@@ -58,14 +59,42 @@ describe('app state validations', () => {
 function isBoardValid(board) {
   // console.log(`board: ${JSON.stringify(board)}`);
   
-  // check each grid
-  if (board.every((grid) => {
-    return  grid.reduce((acc, curr) => {
-      acc += curr.value;
-      return acc;
-    }, 0) === 45;
-  })) {
-    return true;
-  }
-  return false;
+  return (areGridsValid(board) &&
+          areRowsValid(board) &&
+          areColumnsValid(board));
+}
+
+function areGridsValid(board) {
+  return board.every((grid) => {
+    return grid.reduce((accumulator, square) => {
+      return square.value + accumulator;
+    }, 0) === Constants.SUM;
+  });
+}
+
+function areRowsValid(board) {
+  return Constants.DEFAULT_VALUES.every((v, row) => {
+    // console.log(`row=${row}`);
+    return [0, 1, 2].reduce((accumulator, grid) => {
+      // console.log(`accumulator=${accumulator} grid=${Math.floor(row / 3) * 3 + grid}`)
+      return [0, 1, 2].reduce((acc, square) => {
+        // console.log(`acc=${acc} square=${(row % 3) * 3 + square}`)
+        return board[Math.floor(row / 3) * 3 + grid][(row % 3) * 3 + square].value + acc;        
+      }, 0) + accumulator;
+    }, 0) === Constants.SUM;
+  });
+}
+
+function areColumnsValid(board) {
+  return Constants.DEFAULT_VALUES.every((v, col) => {
+    // console.log(`col=${col}`);
+    return [0, 3, 6].reduce((accumulator, grid) => {
+      // console.log(`accumulator=${accumulator} grid=${Math.floor(col / 3) + grid}`)
+      return [0, 3, 6].reduce((acc, square) => {
+        // console.log(`acc=${acc} square=${(col % 3) + square}`)
+        return board[Math.floor(col / 3) + grid][(col % 3) + square].value + acc;
+      }, 0) + accumulator;
+    }, 0) === Constants.SUM;
+  });
+  // return true;
 }
