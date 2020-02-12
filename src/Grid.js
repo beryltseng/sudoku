@@ -8,14 +8,14 @@ class Grid extends React.Component {
   
   getSquare = (i) => {
     return (
-      <Square square={this.props.grid[i]} status={this.props.status} handler={this.props.handler} key={i} />
+      <Square square={this.props.grid[i]} status={this.props.status} handler={this.props.handler} key={i} id={this.props.id + '-' + i}/>
     )
   }
   
   render() {
     
     return (
-      <div className="grid">{
+      <div className="grid" id={this.props.id}>{
         this.props.grid.map((v, i) => {
           return this.getSquare(i);
         })
