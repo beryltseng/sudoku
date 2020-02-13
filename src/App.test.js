@@ -34,7 +34,7 @@ describe('app state validations', () => {
 
   test('initial app state', () => {
     const component = shallow(<App />);
-    expect(component.state('status')).toBe(1);
+    expect(component.state('status')).toBe(Constants.STATUS.INITIAL);
     expect(component.state('penValue')).toBe(1);
   });
 
@@ -46,7 +46,7 @@ describe('app state validations', () => {
     startButton.simulate('click');
     // console.log(startButton.props);
     // startButton.props().onClick();
-    expect(component.state('status')).toBe(2);
+    expect(component.state('status')).toBe(Constants.STATUS.STARTED);
     expect(component.state('penValue')).toBe(1);
     expect(isBoardValid(component.state('board'))).toBe(true);
   });  
