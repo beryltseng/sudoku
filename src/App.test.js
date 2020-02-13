@@ -2,6 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import App from './App';
 import Constants from './Constants';
+import { shallow } from 'enzyme';
 
 describe('rendering tests', () => {
   
@@ -28,11 +29,6 @@ describe('rendering tests', () => {
 });
 
 //===========================================================
-// enzyme setup
-import { configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-configure({ adapter: new Adapter() });
-import { shallow } from 'enzyme';
 
 describe('app state validations', () => {
 
