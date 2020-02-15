@@ -200,8 +200,8 @@ class App extends React.Component {
               <p><strong>{formatTime(Constants.TIME_LIMIT - elapsed)}</strong></p>            
               <div className="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
                 <div className="btn-group" role="group" aria-label="First group">
-                  <button type="button" className="btn btn-secondary" onClick={this.onStartGame}>New Beginning</button>
-                  <button type="button" className="btn btn-primary" onClick={this.onEndGame}>Verdict</button>            
+                  <button type="button" className="btn btn-secondary" onClick={this.onStartGame} id="AnotherGame">New Beginning</button>
+                  <button type="button" className="btn btn-primary" onClick={this.onEndGame} id="EndGame">Verdict</button>            
                 </div>
                 <div className="btn-group" role="group" aria-label="Second group">{
                   Constants.DEFAULT_VALUES.map((v) => {

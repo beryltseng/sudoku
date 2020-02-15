@@ -17,7 +17,6 @@ describe('rendering tests', () => {
 
     // Click button
     fireEvent.click(getByText('Let', { exact: false }));
-    // fireEvent.click(getByText("Let\'s go", { exact: true }));
 
     // Wait for page to update with query text
     const newGameButton = await findByText(/New Beginning/);
@@ -38,18 +37,48 @@ describe('app state validations', () => {
     expect(component.state('penValue')).toBe(1);
   });
 
-  test('app state after starting a new game', () => {
+  test('app state after starting and stopping a game', () => {
+    
     const component = shallow(<App />);
+    
     const startButton = component.find('#NewGame');
     expect(startButton).toBeDefined();
     expect(startButton.length).toBe(1);
     startButton.simulate('click');
-    // console.log(startButton.props);
-    // startButton.props().onClick();
     expect(component.state('status')).toBe(Constants.STATUS.STARTED);
     expect(component.state('penValue')).toBe(1);
     expect(isBoardValid(component.state('board'))).toBe(true);
-  });  
+    
+    const endButton = component.find('#EndGame');
+    expect(endButton).toBeDefined();
+    expect(endButton.length).toBe(1);
+    endButton.simulate('click');
+    expect(component.state('status')).toBe(Constants.STATUS.FAILED);
+  });
+  
+  test('app state after starting another game', () => {
+    
+    const component = shallow(<App />);
+    
+    const startButton = component.find('#NewGame');
+    expect(startButton).toBeDefined();
+    expect(startButton.length).toBe(1);
+    startButton.simulate('click');
+    expect(component.state('status')).toBe(Constants.STATUS.STARTED);
+    expect(component.state('penValue')).toBe(1);
+    expect(isBoardValid(component.state('board'))).toBe(true);
+    
+    let count = 10;
+    while (count-- > 0) {
+      const anotherButton = component.find('#AnotherGame');
+      expect(anotherButton).toBeDefined();
+      expect(anotherButton.length).toBe(1);
+      anotherButton.simulate('click');
+      expect(component.state('status')).toBe(Constants.STATUS.STARTED);
+      expect(component.state('penValue')).toBe(1);
+      expect(isBoardValid(component.state('board'))).toBe(true);
+    }
+  });   
 });
 
 function isBoardValid(board) {
