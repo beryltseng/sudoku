@@ -15,7 +15,7 @@ class Grid extends React.Component {
   render() {
     
     return (
-      <div className="grid" id={this.props.id}>{
+      <div className="grid" id={'Grid-' + this.props.id}>{
         this.props.grid.map((v, i) => {
           return this.getSquare(i);
         })

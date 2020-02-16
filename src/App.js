@@ -206,9 +206,9 @@ class App extends React.Component {
                 <div className="btn-group" role="group" aria-label="Second group">{
                   Constants.DEFAULT_VALUES.map((v) => {
                     return penValue === v ? (
-                      <button type="button" className="btn btn-outline-primary focus active" onClick={() => this.onPenChanged(v)} key={v}>{v}</button>
+                      <button type="button" className="btn btn-outline-primary focus active" onClick={() => this.onPenChanged(v)} key={v} id={'Pen-' + v}>{v}</button>
                     ) : (
-                      <button type="button" className="btn btn-outline-primary" onClick={() => this.onPenChanged(v)} key={v}>{v}</button>
+                      <button type="button" className="btn btn-outline-primary" onClick={() => this.onPenChanged(v)} key={v} id={'Pen-' + v}>{v}</button>
                     )
                   })
                 }</div>

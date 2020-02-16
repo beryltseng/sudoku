@@ -17,7 +17,7 @@ class Square extends React.Component {
         className={(status === Constants.STATUS.FAILED || status === Constants.STATUS.TIMEOUT) && square.display !== " " && square.display !== square.value ?
                     'square square-error' : square.mutable ? 'square square-mutable' : 'square'}
         disabled={!square.mutable || status === Constants.STATUS.RESOLVED || status === Constants.STATUS.FAILED || status === Constants.STATUS.TIMEOUT}
-        id={id}
+        id={'Square-' + id}
         onClick={() => this.props.handler(square.row, square.col)}>{square.display}
       </button>
     );

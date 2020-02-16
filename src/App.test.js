@@ -78,7 +78,77 @@ describe('app state validations', () => {
       expect(component.state('penValue')).toBe(1);
       expect(isBoardValid(component.state('board'))).toBe(true);
     }
-  });   
+  });
+  
+  test('app state after changing pen values', () => {
+    
+    const component = shallow(<App />);
+    
+    const startButton = component.find('#NewGame');
+    expect(startButton).toBeDefined();
+    expect(startButton.length).toBe(1);
+    startButton.simulate('click');
+    expect(component.state('status')).toBe(Constants.STATUS.STARTED);
+    expect(component.state('penValue')).toBe(1);
+    expect(isBoardValid(component.state('board'))).toBe(true);
+    
+    Constants.DEFAULT_VALUES.forEach((pen) => {
+      const penButton = component.find(`#Pen-${pen}`);       
+      expect(penButton).toBeDefined();
+      expect(penButton.length).toBe(1);
+      penButton.simulate('click');
+      expect(component.state('penValue')).toBe(pen);      
+    });
+  });  
+  
+  xtest('app state after resolving a game', () => {
+    
+    const component = shallow(<App />);
+    
+    const startButton = component.find('#NewGame');
+    expect(startButton).toBeDefined();
+    expect(startButton.length).toBe(1);
+    startButton.simulate('click');
+    expect(component.state('status')).toBe(Constants.STATUS.STARTED);
+    expect(component.state('penValue')).toBe(1);
+    expect(isBoardValid(component.state('board'))).toBe(true);
+
+
+    // const pen1Button = component.find(`#Pen-1`);
+    // expect(pen1Button).toBeDefined();
+    // expect(pen1Button.length).toBe(1);
+    // pen1Button.simulate('click');
+    // expect(component.state('penValue')).toBe(1);
+    //
+    // const square1Button = component.find(`#Square-0-0`);
+    // expect(square1Button).toBeDefined();
+    // expect(square1Button.length).toBe(1);
+    // square1Button.simulate('click');
+    // // expect(component.state('board')[square.row][square.col].display).toBe(square.value);
+        
+    component.state('board').forEach((grid) => {
+      grid.forEach((square) => {
+        if (square.mutable) {
+          // component.update();
+          // component.debug();
+          const penButton = component.find(`#Pen-${square.value}`);
+          console.log(`BERYL #Pen-${square.value} #Square-${square.row}-${square.col}`);          
+          expect(penButton).toBeDefined();
+          expect(penButton.length).toBe(1);
+          penButton.simulate('click');
+          expect(component.state('penValue')).toBe(square.value);
+          
+          const squareButton = component.find(`#Square-${square.row}-${square.col}`);
+          expect(squareButton).toBeDefined();
+          expect(squareButton.length).toBe(1);
+          squareButton.simulate('click');
+          expect(component.state('board')[square.row][square.col].display).toBe(square.value);
+        }
+      });
+    });
+    
+    expect(component.state('status')).toBe(Constants.STATUS.RESOLVED);
+  });    
 });
 
 function isBoardValid(board) {
