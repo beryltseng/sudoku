@@ -3,6 +3,7 @@ import { render, fireEvent } from '@testing-library/react';
 import App from './App';
 import Constants from './Constants';
 import { shallow } from 'enzyme';
+import async from 'async';
 
 describe('rendering tests', () => {
   
@@ -11,20 +12,7 @@ describe('rendering tests', () => {
     const linkElement = getByText(/GitHub/i);
     expect(linkElement).toBeInTheDocument();
   });
-
-  test('game is started', async () => {
-    const { getByText, findByText } = render(<App />);
-
-    // Click button
-    fireEvent.click(getByText('Let', { exact: false }));
-
-    // Wait for page to update with query text
-    const newGameButton = await findByText(/New Beginning/);
-    expect(newGameButton).not.toBeNull();
-  
-    const verdictButton = await findByText(/Verdict/);
-    expect(verdictButton).not.toBeNull();
-  });  
+ 
 });
 
 //===========================================================
@@ -101,7 +89,7 @@ describe('app state validations', () => {
     });
   });  
   
-  test('app state after resolving a game', () => {
+  test('app state after resolving a game', (done) => {
     
     const component = shallow(<App />);
     
@@ -113,17 +101,11 @@ describe('app state validations', () => {
     expect(component.state('penValue')).toBe(1);
     expect(isBoardValid(component.state('board'))).toBe(true);
 
-
     const board = component.find('Board');
     console.log(board.debug());
-    
-    // component.find('Board').invoke('handler')(0, 0);//.then(() => {
-    //   // expect()
-    //   console.log('Yah!!!')
-    //   //});  
         
-    component.state('board').forEach((grid) => {
-      grid.forEach((square) => {
+    async.eachSeries(component.state('board'), (grid, nextGrid) => {
+      async.eachSeries(grid, (square, nextSquare) => {
         if (square.mutable) {
           const penButton = component.find({id: `Pen-${square.value}`});
           expect(penButton).toBeDefined();
@@ -134,11 +116,19 @@ describe('app state validations', () => {
           
           board.invoke('handler')(square.row, square.col);
           expect(component.state('board')[square.row][square.col].display).toBe(square.value);
+          nextSquare();
+        } else {
+          nextSquare();
         }
+      }, () => {
+        nextGrid();
       });
+    }, () => {
+      setTimeout(() => {
+        expect(component.state('status')).toBe(Constants.STATUS.RESOLVED); 
+        done();        
+      }, 500);
     });
-    
-    expect(component.state('status')).toBe(Constants.STATUS.RESOLVED);
   });    
 });
 
