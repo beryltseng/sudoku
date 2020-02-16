@@ -1,9 +1,32 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import App from './App';
-import Constants from './Constants';
+import Constants from './Constants.js';
 import { shallow } from 'enzyme';
 import async from 'async';
+
+jest.mock('./Constants.js', () => {
+  return {
+    DEFAULT_VALUES : [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  
+    // each bit represents the a candidate value so 1022 indicates 1-9 are all possible
+    DEFAULT_CANDIDATES: 1022,
+  
+    // sum from 1...9
+    SUM: 45,
+  
+    // possible statuses of a game
+    STATUS : {
+      INITIAL: 1,
+      STARTED: 1 << 1,
+      RESOLVED: 1 << 2,
+      FAILED: 1 << 3,
+      TIMEOUT: 1 << 4
+    },
+  
+    TIME_LIMIT: 500 // shorten timeout for testing
+  };
+});
 
 describe('rendering tests', () => {
   
@@ -131,7 +154,7 @@ describe('app state validations', () => {
     });
   }); 
   
-  xtest('app state after timing out', (done) => {
+  test('app state after timing out', (done) => {
     
     const component = shallow(<App />);
     
@@ -146,7 +169,7 @@ describe('app state validations', () => {
     setTimeout(() => {
       expect(component.state('status')).toBe(Constants.STATUS.TIMEOUT);
       done();      
-    }, Constants.TIME_LIMIT);
+    }, Constants.TIME_LIMIT * 2);
   });     
 });
 
