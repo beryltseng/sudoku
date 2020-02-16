@@ -101,7 +101,7 @@ describe('app state validations', () => {
     });
   });  
   
-  xtest('app state after resolving a game', () => {
+  test('app state after resolving a game', () => {
     
     const component = shallow(<App />);
     
@@ -114,34 +114,25 @@ describe('app state validations', () => {
     expect(isBoardValid(component.state('board'))).toBe(true);
 
 
-    // const pen1Button = component.find(`#Pen-1`);
-    // expect(pen1Button).toBeDefined();
-    // expect(pen1Button.length).toBe(1);
-    // pen1Button.simulate('click');
-    // expect(component.state('penValue')).toBe(1);
-    //
-    // const square1Button = component.find(`#Square-0-0`);
-    // expect(square1Button).toBeDefined();
-    // expect(square1Button.length).toBe(1);
-    // square1Button.simulate('click');
-    // // expect(component.state('board')[square.row][square.col].display).toBe(square.value);
+    const board = component.find('Board');
+    console.log(board.debug());
+    
+    // component.find('Board').invoke('handler')(0, 0);//.then(() => {
+    //   // expect()
+    //   console.log('Yah!!!')
+    //   //});  
         
     component.state('board').forEach((grid) => {
       grid.forEach((square) => {
         if (square.mutable) {
-          // component.update();
-          // component.debug();
           const penButton = component.find({id: `Pen-${square.value}`});
-          console.log(`BERYL #Pen-${square.value} #Square-${square.row}-${square.col}`);          
           expect(penButton).toBeDefined();
+          console.log(penButton.debug());
           expect(penButton.length).toBe(1);
           penButton.simulate('click');
           expect(component.state('penValue')).toBe(square.value);
           
-          const squareButton = component.find({id: `Square-${square.row}-${square.col}`});
-          expect(squareButton).toBeDefined();
-          expect(squareButton.length).toBe(1);
-          squareButton.simulate('click');
+          board.invoke('handler')(square.row, square.col);
           expect(component.state('board')[square.row][square.col].display).toBe(square.value);
         }
       });
