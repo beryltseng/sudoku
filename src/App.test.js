@@ -41,7 +41,7 @@ describe('app state validations', () => {
     
     const component = shallow(<App />);
     
-    const startButton = component.find('#NewGame');
+    const startButton = component.find({id: 'NewGame'});
     expect(startButton).toBeDefined();
     expect(startButton.length).toBe(1);
     startButton.simulate('click');
@@ -49,7 +49,7 @@ describe('app state validations', () => {
     expect(component.state('penValue')).toBe(1);
     expect(isBoardValid(component.state('board'))).toBe(true);
     
-    const endButton = component.find('#EndGame');
+    const endButton = component.find({id: 'EndGame'});
     expect(endButton).toBeDefined();
     expect(endButton.length).toBe(1);
     endButton.simulate('click');
@@ -60,7 +60,7 @@ describe('app state validations', () => {
     
     const component = shallow(<App />);
     
-    const startButton = component.find('#NewGame');
+    const startButton = component.find({id: 'NewGame'});
     expect(startButton).toBeDefined();
     expect(startButton.length).toBe(1);
     startButton.simulate('click');
@@ -70,7 +70,7 @@ describe('app state validations', () => {
     
     let count = 10;
     while (count-- > 0) {
-      const anotherButton = component.find('#AnotherGame');
+      const anotherButton = component.find({id: 'AnotherGame'});
       expect(anotherButton).toBeDefined();
       expect(anotherButton.length).toBe(1);
       anotherButton.simulate('click');
@@ -84,7 +84,7 @@ describe('app state validations', () => {
     
     const component = shallow(<App />);
     
-    const startButton = component.find('#NewGame');
+    const startButton = component.find({id: 'NewGame'});
     expect(startButton).toBeDefined();
     expect(startButton.length).toBe(1);
     startButton.simulate('click');
@@ -93,7 +93,7 @@ describe('app state validations', () => {
     expect(isBoardValid(component.state('board'))).toBe(true);
     
     Constants.DEFAULT_VALUES.forEach((pen) => {
-      const penButton = component.find(`#Pen-${pen}`);       
+      const penButton = component.find({id: `Pen-${pen}`});       
       expect(penButton).toBeDefined();
       expect(penButton.length).toBe(1);
       penButton.simulate('click');
@@ -105,7 +105,7 @@ describe('app state validations', () => {
     
     const component = shallow(<App />);
     
-    const startButton = component.find('#NewGame');
+    const startButton = component.find({id: 'NewGame'});
     expect(startButton).toBeDefined();
     expect(startButton.length).toBe(1);
     startButton.simulate('click');
@@ -131,14 +131,14 @@ describe('app state validations', () => {
         if (square.mutable) {
           // component.update();
           // component.debug();
-          const penButton = component.find(`#Pen-${square.value}`);
+          const penButton = component.find({id: `Pen-${square.value}`});
           console.log(`BERYL #Pen-${square.value} #Square-${square.row}-${square.col}`);          
           expect(penButton).toBeDefined();
           expect(penButton.length).toBe(1);
           penButton.simulate('click');
           expect(component.state('penValue')).toBe(square.value);
           
-          const squareButton = component.find(`#Square-${square.row}-${square.col}`);
+          const squareButton = component.find({id: `Square-${square.row}-${square.col}`});
           expect(squareButton).toBeDefined();
           expect(squareButton.length).toBe(1);
           squareButton.simulate('click');
