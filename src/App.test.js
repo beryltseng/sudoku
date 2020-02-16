@@ -66,7 +66,7 @@ describe('app state validations', () => {
       expect(component.state('penValue')).toBe(1);
       expect(isBoardValid(component.state('board'))).toBe(true);
     }
-  });
+  });  
   
   test('app state after changing pen values', () => {
     
@@ -129,7 +129,25 @@ describe('app state validations', () => {
         done();        
       }, 500);
     });
-  });    
+  }); 
+  
+  xtest('app state after timing out', (done) => {
+    
+    const component = shallow(<App />);
+    
+    const startButton = component.find({id: 'NewGame'});
+    expect(startButton).toBeDefined();
+    expect(startButton.length).toBe(1);
+    startButton.simulate('click');
+    expect(component.state('status')).toBe(Constants.STATUS.STARTED);
+    expect(component.state('penValue')).toBe(1);
+    expect(isBoardValid(component.state('board'))).toBe(true);
+    
+    setTimeout(() => {
+      expect(component.state('status')).toBe(Constants.STATUS.TIMEOUT);
+      done();      
+    }, Constants.TIME_LIMIT);
+  });     
 });
 
 function isBoardValid(board) {
