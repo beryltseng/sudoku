@@ -174,7 +174,67 @@ describe('app state validations', () => {
       expect(component.state('status')).toBe(Constants.STATUS.TIMEOUT);
       done();      
     }, Constants.TIME_LIMIT * 2);
-  });     
+  });
+  
+  test('app state after making guesses', () => {
+    
+    const component = shallow(<App />);
+    
+    const startButton = component.find({id: 'NewGame'});
+    expect(startButton).toBeDefined();
+    expect(startButton.length).toBe(1);
+    startButton.simulate('click');
+    expect(component.state('status')).toBe(Constants.STATUS.STARTED);
+    expect(component.state('penValue')).toBe(1);
+    expect(isBoardValid(component.state('board'))).toBe(true);
+    
+    const mutables = component.state('board').reduce((accumulator, grid) => {
+      grid.reduce((acct, square) => {
+        if (square.mutable) {
+          acct.push(square);
+        }
+        return acct;
+      }, accumulator);
+      return accumulator;
+    }, []);
+    console.log(`Mutables = ${JSON.stringify(mutables)}`);
+    
+    expect(component.state('stats').unknown).toBe(mutables.length);
+    expect(component.state('stats').error).toBe(0);
+    
+    const board = component.find('Board');
+    const square = mutables[0];
+    const correctPan = component.find({id: `Pen-${square.value}`});
+    const wrongPan = component.find({id: `Pen-${Constants.DEFAULT_VALUES.find(v => v !== square.value)}`});
+    
+    // was unknown and now correct
+    correctPan.simulate('click');
+    expect(component.state('penValue')).toBe(square.value);    
+    board.invoke('handler')(square.row, square.col);
+    expect(component.state('stats').unknown).toBe(mutables.length - 1);
+    expect(component.state('stats').error).toBe(0);
+    
+    // was correct and now incorrect
+    wrongPan.simulate('click');
+    expect(component.state('penValue')).not.toBe(square.value);    
+    board.invoke('handler')(square.row, square.col);
+    expect(component.state('stats').unknown).toBe(mutables.length - 1);
+    expect(component.state('stats').error).toBe(1);
+    
+    // was incorrect and now correct
+    correctPan.simulate('click');
+    expect(component.state('penValue')).toBe(square.value);    
+    board.invoke('handler')(square.row, square.col);
+    expect(component.state('stats').unknown).toBe(mutables.length - 1);
+    expect(component.state('stats').error).toBe(0);
+    
+    // was correct and now back to unknown
+    correctPan.simulate('click');
+    expect(component.state('penValue')).toBe(square.value);    
+    board.invoke('handler')(square.row, square.col);
+    expect(component.state('stats').unknown).toBe(mutables.length);
+    expect(component.state('stats').error).toBe(0);    
+  });   
 });
 
 //===========================================================
