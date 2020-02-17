@@ -24,7 +24,7 @@ jest.mock('./Constants.js', () => {
       TIMEOUT: 1 << 4
     },
   
-    TIME_LIMIT: 500 // shorten timeout for testing
+    TIME_LIMIT: 1500 // shorten timeout for testing
   };
 });
 
