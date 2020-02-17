@@ -28,6 +28,8 @@ jest.mock('./Constants.js', () => {
   };
 });
 
+//===========================================================
+
 describe('rendering tests', () => {
   
   test('renders GitHub link', () => {
@@ -137,6 +139,8 @@ describe('app state validations', () => {
           penButton.simulate('click');
           expect(component.state('penValue')).toBe(square.value);
           
+          // no access to square button from App node, invoke handler on Board instead of
+          // simulating button click on the square
           board.invoke('handler')(square.row, square.col);
           expect(component.state('board')[square.row][square.col].display).toBe(square.value);
           nextSquare();
@@ -173,8 +177,9 @@ describe('app state validations', () => {
   });     
 });
 
+//===========================================================
+
 function isBoardValid(board) {
-  // console.log(`board: ${JSON.stringify(board)}`);
   return (areGridsValid(board) &&
           areRowsValid(board) &&
           areColumnsValid(board));
@@ -190,11 +195,8 @@ function areGridsValid(board) {
 
 function areRowsValid(board) {
   return Constants.DEFAULT_VALUES.every((v, row) => {
-    // console.log(`row=${row}`);
     return [0, 1, 2].reduce((accumulator, grid) => {
-      // console.log(`accumulator=${accumulator} grid=${Math.floor(row / 3) * 3 + grid}`)
       return [0, 1, 2].reduce((acc, square) => {
-        // console.log(`acc=${acc} square=${(row % 3) * 3 + square}`)
         return board[Math.floor(row / 3) * 3 + grid][(row % 3) * 3 + square].value + acc;        
       }, 0) + accumulator;
     }, 0) === Constants.SUM;
@@ -203,11 +205,8 @@ function areRowsValid(board) {
 
 function areColumnsValid(board) {
   return Constants.DEFAULT_VALUES.every((v, col) => {
-    // console.log(`col=${col}`);
     return [0, 3, 6].reduce((accumulator, grid) => {
-      // console.log(`accumulator=${accumulator} grid=${Math.floor(col / 3) + grid}`)
       return [0, 3, 6].reduce((acc, square) => {
-        // console.log(`acc=${acc} square=${(col % 3) + square}`)
         return board[Math.floor(col / 3) + grid][(col % 3) + square].value + acc;
       }, 0) + accumulator;
     }, 0) === Constants.SUM;
