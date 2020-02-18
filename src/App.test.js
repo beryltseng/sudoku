@@ -126,22 +126,11 @@ describe('app state validations', () => {
     expect(component.state('penValue')).toBe(1);
     expect(isBoardValid(component.state('board'))).toBe(true);
 
-    const board = component.find('Board');
-    console.log(board.debug());
-        
     async.eachSeries(component.state('board'), (grid, nextGrid) => {
       async.eachSeries(grid, (square, nextSquare) => {
         if (square.mutable) {
-          const penButton = component.find({id: `Pen-${square.value}`});
-          expect(penButton).toBeDefined();
-          console.log(penButton.debug());
-          expect(penButton.length).toBe(1);
-          penButton.simulate('click');
+          makeGuess(component, square);
           expect(component.state('penValue')).toBe(square.value);
-          
-          // no access to square button from App node, invoke handler on Board instead of
-          // simulating button click on the square
-          board.invoke('handler')(square.row, square.col);
           expect(component.state('board')[square.row][square.col].display).toBe(square.value);
           nextSquare();
         } else {
@@ -188,50 +177,37 @@ describe('app state validations', () => {
     expect(component.state('penValue')).toBe(1);
     expect(isBoardValid(component.state('board'))).toBe(true);
     
-    const mutables = component.state('board').reduce((accumulator, grid) => {
-      grid.reduce((acct, square) => {
-        if (square.mutable) {
-          acct.push(square);
-        }
-        return acct;
-      }, accumulator);
-      return accumulator;
-    }, []);
+    const mutables = getMutableSquares(component.state('board'));
     console.log(`Mutables = ${JSON.stringify(mutables)}`);
     
     expect(component.state('stats').unknown).toBe(mutables.length);
     expect(component.state('stats').error).toBe(0);
     
-    const board = component.find('Board');
     const square = mutables[0];
-    const correctPan = component.find({id: `Pen-${square.value}`});
-    const wrongPan = component.find({id: `Pen-${Constants.DEFAULT_VALUES.find(v => v !== square.value)}`});
+    const correctPen = component.find({id: `Pen-${square.value}`});
+    const wrongPen = component.find({id: `Pen-${Constants.DEFAULT_VALUES.find(v => v !== square.value)}`});
     
     // was unknown and now correct
-    correctPan.simulate('click');
+    makeGuess(component, square, correctPen);
     expect(component.state('penValue')).toBe(square.value);    
-    board.invoke('handler')(square.row, square.col);
     expect(component.state('stats').unknown).toBe(mutables.length - 1);
     expect(component.state('stats').error).toBe(0);
     
     // was correct and now incorrect
-    wrongPan.simulate('click');
+    makeGuess(component, square, wrongPen);
     expect(component.state('penValue')).not.toBe(square.value);    
-    board.invoke('handler')(square.row, square.col);
     expect(component.state('stats').unknown).toBe(mutables.length - 1);
     expect(component.state('stats').error).toBe(1);
     
     // was incorrect and now correct
-    correctPan.simulate('click');
+    makeGuess(component, square, correctPen);
     expect(component.state('penValue')).toBe(square.value);    
-    board.invoke('handler')(square.row, square.col);
     expect(component.state('stats').unknown).toBe(mutables.length - 1);
     expect(component.state('stats').error).toBe(0);
     
     // was correct and now back to unknown
-    correctPan.simulate('click');
+    makeGuess(component, square, correctPen);
     expect(component.state('penValue')).toBe(square.value);    
-    board.invoke('handler')(square.row, square.col);
     expect(component.state('stats').unknown).toBe(mutables.length);
     expect(component.state('stats').error).toBe(0);    
   });   
@@ -271,4 +247,28 @@ function areColumnsValid(board) {
       }, 0) + accumulator;
     }, 0) === Constants.SUM;
   });
+}
+
+function getMutableSquares(board) {
+  return board.reduce((accumulator, grid) => {
+    grid.reduce((acct, square) => {
+      if (square.mutable) {
+        acct.push(square);
+      }
+      return acct;
+    }, accumulator);
+    return accumulator;
+  }, []);
+}
+
+function makeGuess(component, square, pen) {
+  const board = component.find('Board');
+  if (!pen) {
+    pen = component.find({id: `Pen-${square.value}`});    
+  }
+  pen.simulate('click');
+  
+  // no access to square button from App node, invoke handler on Board instead of
+  // simulating button click on the square 
+  component.find('Board').invoke('handler')(square.row, square.col);  
 }
