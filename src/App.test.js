@@ -67,7 +67,65 @@ describe('app state validations', () => {
     expect(endButton.length).toBe(1);
     endButton.simulate('click');
     expect(component.state('status')).toBe(Constants.STATUS.FAILED);
+    
+    const dashboard = component.find('.dashboard');
+    const texts = dashboard.map((node) => node.text());
+    expect(texts).toEqual([`You didn't get any wrong but you did't finish the game.Play again!`]);
   });
+  
+  test('app state after starting and stopping a game after making a correct guess', () => {
+    
+    const component = shallow(<App />);
+    
+    const startButton = component.find({id: 'NewGame'});
+    expect(startButton).toBeDefined();
+    expect(startButton.length).toBe(1);
+    startButton.simulate('click');
+    expect(component.state('status')).toBe(Constants.STATUS.STARTED);
+    expect(component.state('penValue')).toBe(1);
+    expect(isBoardValid(component.state('board'))).toBe(true);
+    
+    // make a correct guess
+    makeGuess(component, getMutableSquares(component.state('board'))[0]);
+    
+    const endButton = component.find({id: 'EndGame'});
+    expect(endButton).toBeDefined();
+    expect(endButton.length).toBe(1);
+    endButton.simulate('click');
+    expect(component.state('status')).toBe(Constants.STATUS.FAILED);
+    
+    const dashboard = component.find('.dashboard');
+    const texts = dashboard.map((node) => node.text());
+    expect(texts).toEqual([`You didn't get any wrong but you did't finish the game.Play again!`]);    
+  });
+  
+  test('app state after starting and stopping a game after making a wrong guess', () => {
+    
+    const component = shallow(<App />);
+    
+    const startButton = component.find({id: 'NewGame'});
+    expect(startButton).toBeDefined();
+    expect(startButton.length).toBe(1);
+    startButton.simulate('click');
+    expect(component.state('status')).toBe(Constants.STATUS.STARTED);
+    expect(component.state('penValue')).toBe(1);
+    expect(isBoardValid(component.state('board'))).toBe(true);
+    
+    // make a wrong guess
+    const square = getMutableSquares(component.state('board'))[0];
+    const wrongPen = component.find({id: `Pen-${Constants.DEFAULT_VALUES.find(v => v !== square.value)}`});    
+    makeGuess(component, square, wrongPen);
+    
+    const endButton = component.find({id: 'EndGame'});
+    expect(endButton).toBeDefined();
+    expect(endButton.length).toBe(1);
+    endButton.simulate('click');
+    expect(component.state('status')).toBe(Constants.STATUS.FAILED);
+    
+    const dashboard = component.find('.dashboard');
+    const texts = dashboard.map((node) => node.text());
+    expect(texts).toEqual([`You got 1 wrong so far.Play again!`]);    
+  });  
   
   test('app state after starting another game', () => {
     
@@ -142,12 +200,17 @@ describe('app state validations', () => {
     }, () => {
       setTimeout(() => {
         expect(component.state('status')).toBe(Constants.STATUS.RESOLVED); 
+        
+        const dashboard = component.find('.dashboard');
+        const texts = dashboard.map((node) => node.text());
+        expect(texts).toEqual(expect.arrayContaining([expect.stringMatching(/^You are a genius+/)])); 
+                
         done();        
       }, 500);
     });
   }); 
   
-  test('app state after timing out', (done) => {
+  test('app state after timing out without making any guess', (done) => {
     
     const component = shallow(<App />);
     
@@ -161,9 +224,68 @@ describe('app state validations', () => {
     
     setTimeout(() => {
       expect(component.state('status')).toBe(Constants.STATUS.TIMEOUT);
+      
+      const dashboard = component.find('.dashboard');
+      const texts = dashboard.map((node) => node.text());
+      expect(texts).toEqual([`Time's up.Play again!`]); 
+            
       done();      
     }, Constants.TIME_LIMIT * 2);
   });
+  
+  test('app state after timing out without making a correct guess', (done) => {
+    
+    const component = shallow(<App />);
+    
+    const startButton = component.find({id: 'NewGame'});
+    expect(startButton).toBeDefined();
+    expect(startButton.length).toBe(1);
+    startButton.simulate('click');
+    expect(component.state('status')).toBe(Constants.STATUS.STARTED);
+    expect(component.state('penValue')).toBe(1);
+    expect(isBoardValid(component.state('board'))).toBe(true);
+    
+    // make a correct guess
+    makeGuess(component, getMutableSquares(component.state('board'))[0]); 
+    
+    setTimeout(() => {
+      expect(component.state('status')).toBe(Constants.STATUS.TIMEOUT);
+      
+      const dashboard = component.find('.dashboard');
+      const texts = dashboard.map((node) => node.text());
+      expect(texts).toEqual([`Time's up.Play again!`]); 
+            
+      done();      
+    }, Constants.TIME_LIMIT * 2);
+  });
+  
+  test('app state after timing out without making a wrong guess', (done) => {
+    
+    const component = shallow(<App />);
+    
+    const startButton = component.find({id: 'NewGame'});
+    expect(startButton).toBeDefined();
+    expect(startButton.length).toBe(1);
+    startButton.simulate('click');
+    expect(component.state('status')).toBe(Constants.STATUS.STARTED);
+    expect(component.state('penValue')).toBe(1);
+    expect(isBoardValid(component.state('board'))).toBe(true);
+    
+    // make a wrong guess
+    const square = getMutableSquares(component.state('board'))[0];
+    const wrongPen = component.find({id: `Pen-${Constants.DEFAULT_VALUES.find(v => v !== square.value)}`});    
+    makeGuess(component, square, wrongPen);
+    
+    setTimeout(() => {
+      expect(component.state('status')).toBe(Constants.STATUS.TIMEOUT);
+      
+      const dashboard = component.find('.dashboard');
+      const texts = dashboard.map((node) => node.text());
+      expect(texts).toEqual([`You got 1 wrong so far.Play again!`]);   
+            
+      done();      
+    }, Constants.TIME_LIMIT * 2);
+  });    
   
   test('app state after making guesses', () => {
     
