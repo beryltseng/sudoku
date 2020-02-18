@@ -50,7 +50,7 @@ describe('app state validations', () => {
     expect(component.state('penValue')).toBe(1);
   });
 
-  test('app state after starting and stopping a game', () => {
+  test('app state after starting and stopping a game without any guess', () => {
     
     const component = shallow(<App />);
     
@@ -262,13 +262,12 @@ function getMutableSquares(board) {
 }
 
 function makeGuess(component, square, pen) {
-  const board = component.find('Board');
   if (!pen) {
     pen = component.find({id: `Pen-${square.value}`});    
   }
   pen.simulate('click');
   
-  // no access to square button from App node, invoke handler on Board instead of
-  // simulating button click on the square 
+  // no access to square button from component (i.e. App node), invoke handler on Board
+  // instead of simulating button click on the square 
   component.find('Board').invoke('handler')(square.row, square.col);  
 }
